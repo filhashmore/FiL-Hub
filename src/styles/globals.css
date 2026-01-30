@@ -1,0 +1,84 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #fafafa;
+    --surface: #1a1a1a;
+    --surface-hover: #2a2a2a;
+    --border: #2a2a2a;
+    --muted: #404040;
+    --muted-foreground: #a1a1a1;
+  }
+
+  .light {
+    --background: #fafafa;
+    --foreground: #0a0a0a;
+    --surface: #ffffff;
+    --surface-hover: #f4f4f5;
+    --border: #e4e4e7;
+    --muted: #f4f4f5;
+    --muted-foreground: #71717a;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@layer components {
+  .gradient-text {
+    @apply bg-gradient-to-r from-accent-bass-bright via-accent-mid to-accent-treble bg-clip-text text-transparent;
+  }
+
+  .gradient-border {
+    @apply border border-transparent bg-gradient-to-r from-accent-bass via-accent-mid to-accent-treble;
+    background-origin: border-box;
+    background-clip: padding-box, border-box;
+  }
+
+  .card {
+    @apply bg-surface rounded-lg border border-border transition-all duration-200;
+  }
+
+  .card:hover {
+    @apply bg-surface-hover border-accent-mid/50;
+  }
+}
+
+/* Waveform animation for hero background */
+@keyframes wave {
+  0%, 100% {
+    d: path("M0,50 Q25,30 50,50 T100,50 T150,50 T200,50");
+  }
+  50% {
+    d: path("M0,50 Q25,70 50,50 T100,50 T150,50 T200,50");
+  }
+}
+
+/* Spectrum bar animation */
+.spectrum-bar {
+  animation: spectrum 1s ease-in-out infinite;
+  animation-delay: calc(var(--bar-index) * 0.1s);
+}
+
+/* Focus styles */
+:focus-visible {
+  @apply outline-none ring-2 ring-accent-mid ring-offset-2 ring-offset-background;
+}
+
+/* Selection */
+::selection {
+  @apply bg-accent-mid/30;
+}
