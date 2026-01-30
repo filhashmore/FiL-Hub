@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { Link, useLocation } from 'react-router-dom'
+import { useState, useCallback } from 'react'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { Menu, X, Github } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Button } from '@/components/ui/Button'
@@ -10,11 +10,44 @@ import { cn } from '@/lib/utils'
 export function Header() {
   const [isOpen, setIsOpen] = useState(false)
   const location = useLocation()
+  const navigate = useNavigate()
 
   const isActive = (href: string) => {
     if (href === '/') return location.pathname === '/'
+    if (href.startsWith('/#')) return false // Hash links aren't "active"
     return location.pathname.startsWith(href)
   }
+
+  const handleNavClick = useCallback(
+    (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+      // Handle hash links (e.g., /#about, /#contact)
+      if (href.startsWith('/#')) {
+        e.preventDefault()
+        const hash = href.substring(1) // Remove leading /
+        const targetId = hash.substring(1) // Remove #
+
+        if (location.pathname === '/') {
+          // Already on home page, just scroll
+          const element = document.getElementById(targetId)
+          if (element) {
+            element.scrollIntoView({ behavior: 'smooth' })
+          }
+        } else {
+          // Navigate to home first, then scroll
+          navigate('/')
+          // Use setTimeout to wait for navigation
+          setTimeout(() => {
+            const element = document.getElementById(targetId)
+            if (element) {
+              element.scrollIntoView({ behavior: 'smooth' })
+            }
+          }, 100)
+        }
+      }
+      setIsOpen(false)
+    },
+    [location.pathname, navigate]
+  )
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border bg-background/80 backdrop-blur-sm">
@@ -26,20 +59,34 @@ export function Header() {
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-6">
-          {navigationConfig.map((item) => (
-            <Link
-              key={item.href}
-              to={item.href}
-              className={cn(
-                'text-sm font-medium transition-colors hover:text-accent-bass-bright',
-                isActive(item.href)
-                  ? 'text-foreground'
-                  : 'text-muted-foreground'
-              )}
-            >
-              {item.label}
-            </Link>
-          ))}
+          {navigationConfig.map((item) =>
+            item.href.startsWith('/#') ? (
+              <a
+                key={item.href}
+                href={item.href}
+                onClick={(e) => handleNavClick(e, item.href)}
+                className={cn(
+                  'text-sm font-medium transition-colors hover:text-accent-bass-bright cursor-pointer',
+                  'text-muted-foreground'
+                )}
+              >
+                {item.label}
+              </a>
+            ) : (
+              <Link
+                key={item.href}
+                to={item.href}
+                className={cn(
+                  'text-sm font-medium transition-colors hover:text-accent-bass-bright',
+                  isActive(item.href)
+                    ? 'text-foreground'
+                    : 'text-muted-foreground'
+                )}
+              >
+                {item.label}
+              </Link>
+            )
+          )}
         </nav>
 
         {/* Right side actions */}
@@ -87,21 +134,32 @@ export function Header() {
             className="md:hidden border-t border-border bg-background"
           >
             <nav className="container mx-auto flex flex-col gap-2 p-4">
-              {navigationConfig.map((item) => (
-                <Link
-                  key={item.href}
-                  to={item.href}
-                  onClick={() => setIsOpen(false)}
-                  className={cn(
-                    'px-4 py-2 rounded-md text-sm font-medium transition-colors',
-                    isActive(item.href)
-                      ? 'bg-surface text-foreground'
-                      : 'text-muted-foreground hover:bg-surface hover:text-foreground'
-                  )}
-                >
-                  {item.label}
-                </Link>
-              ))}
+              {navigationConfig.map((item) =>
+                item.href.startsWith('/#') ? (
+                  <a
+                    key={item.href}
+                    href={item.href}
+                    onClick={(e) => handleNavClick(e, item.href)}
+                    className="px-4 py-2 rounded-md text-sm font-medium text-muted-foreground hover:bg-surface hover:text-foreground cursor-pointer"
+                  >
+                    {item.label}
+                  </a>
+                ) : (
+                  <Link
+                    key={item.href}
+                    to={item.href}
+                    onClick={() => setIsOpen(false)}
+                    className={cn(
+                      'px-4 py-2 rounded-md text-sm font-medium transition-colors',
+                      isActive(item.href)
+                        ? 'bg-surface text-foreground'
+                        : 'text-muted-foreground hover:bg-surface hover:text-foreground'
+                    )}
+                  >
+                    {item.label}
+                  </Link>
+                )
+              )}
               {socialLinks.map((link) => (
                 <a
                   key={link.href}

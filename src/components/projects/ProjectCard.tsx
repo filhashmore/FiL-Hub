@@ -1,8 +1,9 @@
 import { motion } from 'framer-motion'
-import { ExternalLink, Github } from 'lucide-react'
+import { ExternalLink, Github, Key } from 'lucide-react'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
-import type { Project } from '@/config/projects.config'
+import { statusLabels, type Project } from '@/config/projects.config'
+import { cn } from '@/lib/utils'
 
 interface ProjectCardProps {
   project: Project
@@ -10,6 +11,8 @@ interface ProjectCardProps {
 }
 
 export function ProjectCard({ project, index }: ProjectCardProps) {
+  const statusInfo = statusLabels[project.status]
+
   return (
     <motion.article
       initial={{ opacity: 0, y: 20 }}
@@ -19,9 +22,19 @@ export function ProjectCard({ project, index }: ProjectCardProps) {
       whileHover={{ y: -4 }}
       className="card p-6 flex flex-col h-full"
     >
-      {/* Header */}
+      {/* Header with Status */}
       <div className="mb-4">
-        <h3 className="text-lg font-semibold mb-2">{project.title}</h3>
+        <div className="flex items-start justify-between gap-2 mb-2">
+          <h3 className="text-lg font-semibold">{project.title}</h3>
+          <span
+            className={cn(
+              'inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border shrink-0',
+              statusInfo.color
+            )}
+          >
+            {statusInfo.label}
+          </span>
+        </div>
         <p className="text-sm text-muted-foreground line-clamp-2">
           {project.description}
         </p>
@@ -50,6 +63,17 @@ export function ProjectCard({ project, index }: ProjectCardProps) {
               <span className="text-muted-foreground">{metric.label}</span>
             </div>
           ))}
+        </div>
+      )}
+
+      {/* Access Code (if any) */}
+      {project.accessCode && (
+        <div className="flex items-center gap-2 mb-4 px-3 py-2 rounded-md bg-accent-mid/10 border border-accent-mid/20">
+          <Key className="h-4 w-4 text-accent-mid-bright shrink-0" />
+          <span className="text-xs text-muted-foreground">Access Code:</span>
+          <code className="text-xs font-mono text-accent-mid-bright">
+            {project.accessCode}
+          </code>
         </div>
       )}
 

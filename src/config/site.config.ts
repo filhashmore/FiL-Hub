@@ -23,6 +23,7 @@ export const siteConfig = {
       'Audio/RF engineering expertise',
       'Touring production workflow optimization',
       'Config-driven, offline-first architecture',
+      'Supabase & serverless backends',
     ],
   },
 

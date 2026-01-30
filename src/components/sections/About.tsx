@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { Code, Music, Wrench, Smartphone, Cloud } from 'lucide-react'
+import { Code, Music, Wrench, Smartphone, Cloud, Database } from 'lucide-react'
 import { siteConfig } from '@/config/site.config'
 
 const iconMap: Record<string, React.ElementType> = {
@@ -8,6 +8,7 @@ const iconMap: Record<string, React.ElementType> = {
   'Audio/RF engineering expertise': Music,
   'Touring production workflow optimization': Wrench,
   'Config-driven, offline-first architecture': Cloud,
+  'Supabase & serverless backends': Database,
 }
 
 export function About() {
@@ -19,7 +20,7 @@ export function About() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="max-w-3xl mx-auto"
+          className="max-w-4xl mx-auto"
         >
           {/* Section header */}
           <div className="text-center mb-12">
@@ -38,7 +39,7 @@ export function About() {
             {siteConfig.about.bio}
           </motion.p>
 
-          {/* Skills grid */}
+          {/* Skills grid - 6 items in 2 rows of 3 */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {siteConfig.about.highlights.map((skill, index) => {
               const Icon = iconMap[skill] || Code
