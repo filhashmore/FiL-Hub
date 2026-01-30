@@ -2,37 +2,93 @@
 <html lang="en" class="dark">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/icons/icon-16.png" />
 
     <!-- Primary Meta Tags -->
     <title>FiL Hub | Developer Portfolio</title>
     <meta name="title" content="FiL Hub | Developer Portfolio" />
-    <meta name="description" content="Developer portfolio showcasing audio tools, creative tech, and web applications for the touring music industry." />
+    <meta name="description" content="Developer portfolio showcasing audio tools, creative tech, and web applications for the touring music industry. Built by FiL Hash." />
     <meta name="author" content="FiL Hash" />
-    <meta name="keywords" content="audio developer, touring production, React, creative tech, freelance developer, RF coordination" />
+    <meta name="keywords" content="FiL Hash, audio developer, touring production, React developer, creative tech, freelance developer, RF coordination, music technology, SetFlow, RF Scout" />
+    <meta name="robots" content="index, follow" />
+    <meta name="language" content="English" />
+    <meta name="revisit-after" content="7 days" />
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://fil-hub.vercel.app/" />
     <meta property="og:title" content="FiL Hub | Developer Portfolio" />
     <meta property="og:description" content="Developer portfolio showcasing audio tools, creative tech, and web applications for the touring music industry." />
-    <meta property="og:image" content="/og-image.png" />
+    <meta property="og:image" content="https://fil-hub.vercel.app/og-image.svg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="FiL Hub - Audio Tools & Creative Tech" />
+    <meta property="og:site_name" content="FiL Hub" />
+    <meta property="og:locale" content="en_US" />
 
     <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image" />
-    <meta property="twitter:url" content="https://fil-hub.vercel.app/" />
-    <meta property="twitter:title" content="FiL Hub | Developer Portfolio" />
-    <meta property="twitter:description" content="Developer portfolio showcasing audio tools, creative tech, and web applications for the touring music industry." />
-    <meta property="twitter:image" content="/og-image.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content="https://fil-hub.vercel.app/" />
+    <meta name="twitter:title" content="FiL Hub | Developer Portfolio" />
+    <meta name="twitter:description" content="Developer portfolio showcasing audio tools, creative tech, and web applications for the touring music industry." />
+    <meta name="twitter:image" content="https://fil-hub.vercel.app/og-image.svg" />
+    <meta name="twitter:image:alt" content="FiL Hub - Audio Tools & Creative Tech" />
+    <meta name="twitter:creator" content="@filhashmore" />
+
+    <!-- LinkedIn -->
+    <meta property="linkedin:owner" content="FiL Hash" />
+
+    <!-- Pinterest -->
+    <meta name="pinterest-rich-pin" content="true" />
+
+    <!-- Slack -->
+    <meta name="slack-app-id" content="fil-hub" />
 
     <!-- PWA -->
     <meta name="theme-color" content="#0a0a0a" />
+    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
+    <meta name="background-color" content="#0a0a0a" />
     <link rel="manifest" href="/manifest.json" />
+    <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="FiL Hub" />
-    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.svg" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.svg" />
+
+    <!-- Microsoft -->
+    <meta name="msapplication-TileColor" content="#0a0a0a" />
+    <meta name="msapplication-config" content="/browserconfig.xml" />
+
+    <!-- Structured Data / JSON-LD -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Person",
+      "name": "FiL Hash",
+      "url": "https://fil-hub.vercel.app",
+      "image": "https://fil-hub.vercel.app/og-image.svg",
+      "sameAs": [
+        "https://github.com/filhashmore"
+      ],
+      "jobTitle": "Full-Stack Developer & Audio Engineer",
+      "worksFor": {
+        "@type": "Organization",
+        "name": "CHECK ONE TWO ENTERPRISE"
+      },
+      "description": "Production manager and developer building audio tools and creative tech for the touring music industry.",
+      "knowsAbout": ["React", "TypeScript", "Audio Engineering", "RF Coordination", "Web Development", "Mobile Development"]
+    }
+    </script>
+
+    <!-- Preconnect for performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="dns-prefetch" href="https://github.com" />
   </head>
   <body>
     <div id="root"></div>
