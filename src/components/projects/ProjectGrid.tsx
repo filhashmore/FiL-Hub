@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ProjectCard } from './ProjectCard'
 import { CategoryFilter } from './CategoryFilter'
-import { getVisibleProjects, type Project } from '@/config/projects.config'
+import { getVisibleProjects } from '@/config/projects.config'
 
 interface ProjectGridProps {
   showFilter?: boolean
