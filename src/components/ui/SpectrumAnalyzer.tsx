@@ -8,6 +8,7 @@ export function SpectrumAnalyzer() {
   const targetRef = useRef({ x: 0.5 })
   const heightsRef = useRef<number[]>([])
   const peaksRef = useRef<number[]>([])
+  const peakHoldRef = useRef<number[]>([])
   const timeRef = useRef(0)
   const lastInteractionRef = useRef(0)
   const animationRef = useRef<number>()
@@ -21,8 +22,9 @@ export function SpectrumAnalyzer() {
 
     let width = 0
     let height = 0
-    let barCount = 32
+    let barCount = 48
     let dpr = 1
+    let showGlow = true
 
     const updateSize = () => {
       dpr = Math.min(window.devicePixelRatio || 1, 2)
@@ -31,13 +33,23 @@ export function SpectrumAnalyzer() {
       canvas.width = width * dpr
       canvas.height = height * dpr
 
-      // Adjust bar count based on width
-      barCount = width < 640 ? 20 : width < 1024 ? 28 : 36
+      // Adjust based on device
+      if (width < 640) {
+        barCount = 24
+        showGlow = false
+      } else if (width < 1024) {
+        barCount = 36
+        showGlow = false
+      } else {
+        barCount = 48
+        showGlow = true
+      }
 
-      // Initialize arrays
+      // Initialize/resize arrays
       if (heightsRef.current.length !== barCount) {
-        heightsRef.current = Array(barCount).fill(3)
-        peaksRef.current = Array(barCount).fill(3)
+        heightsRef.current = Array(barCount).fill(2)
+        peaksRef.current = Array(barCount).fill(2)
+        peakHoldRef.current = Array(barCount).fill(0)
       }
     }
 
@@ -55,53 +67,83 @@ export function SpectrumAnalyzer() {
 
     const draw = () => {
       // Smooth mouse tracking
-      mouseRef.current.x += (targetRef.current.x - mouseRef.current.x) * 0.1
-      timeRef.current += 0.014
+      mouseRef.current.x += (targetRef.current.x - mouseRef.current.x) * 0.12
+      timeRef.current += 0.016
 
       const timeSinceInteraction = Date.now() - lastInteractionRef.current
-      const interactionStrength = Math.max(0, 1 - timeSinceInteraction / 1200)
+      const interactionStrength = Math.max(0, 1 - timeSinceInteraction / 1500)
 
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
       ctx.clearRect(0, 0, width, height)
 
-      const gap = 2
+      const gap = width < 640 ? 1.5 : 2
       const barWidth = (width - (barCount - 1) * gap) / barCount
       const heights = heightsRef.current
       const peaks = peaksRef.current
+      const peakHold = peakHoldRef.current
+      const mouseX = mouseRef.current.x
 
       for (let i = 0; i < barCount; i++) {
         const normalizedIndex = i / barCount
         const freqWeight = Math.pow(1 - normalizedIndex, 0.4)
 
         // Base ambient animation
-        let target = 3
-        target += Math.sin(timeRef.current * 0.5 + i * 0.2) * 3
-        target += Math.sin(timeRef.current * 0.8 + i * PHI * 0.1) * 2
+        let target = 2
+        target += Math.sin(timeRef.current * 0.4 + i * 0.15) * 2.5
+        target += Math.sin(timeRef.current * 0.7 + i * PHI * 0.08) * 2
+        target += Math.sin(timeRef.current * 1.1 + i * 0.22) * 1.5
 
         // Mouse interaction
         if (interactionStrength > 0) {
-          const distance = Math.abs(normalizedIndex - mouseRef.current.x)
-          const spread = 0.15
-          const primary = Math.exp(-Math.pow(distance / spread, 2)) * 45 * freqWeight
-          const harmonic = Math.exp(-Math.pow(distance * 2 / spread, 2)) * 20 * freqWeight
-          target += (primary + harmonic) * interactionStrength
+          const distance = Math.abs(normalizedIndex - mouseX)
+          const spread = 0.12
+
+          // Primary response - gaussian curve
+          const primary = Math.exp(-Math.pow(distance / spread, 2)) * 55 * freqWeight
+
+          // Harmonics for richer response
+          const h2 = Math.exp(-Math.pow(distance * 2.1 / spread, 2)) * 25 * freqWeight
+          const h3 = Math.exp(-Math.pow(distance * 3.2 / spread, 2)) * 12 * freqWeight
+
+          // Sub-bass emphasis (left side)
+          let subBass = 0
+          if (mouseX < 0.25 && normalizedIndex < 0.15) {
+            subBass = 25 * (1 - normalizedIndex / 0.15) * (1 - mouseX / 0.25)
+          }
+
+          // High frequency shimmer (right side)
+          let highFreq = 0
+          if (mouseX > 0.75 && normalizedIndex > 0.7) {
+            highFreq = Math.sin(timeRef.current * 8 + i * 0.6) * 12 * ((normalizedIndex - 0.7) / 0.3)
+          }
+
+          target += (primary + h2 + h3 + subBass + highFreq) * interactionStrength
         }
 
-        // Apply physics
-        const maxHeight = 8 + freqWeight * 70
+        // Apply physics - fast attack, exponential decay
+        const maxHeight = 8 + freqWeight * 85
         target = Math.min(target, maxHeight)
 
         if (target > heights[i]) {
-          heights[i] += (target - heights[i]) * 0.3 // Attack
+          heights[i] += (target - heights[i]) * 0.35 // Fast attack
         } else {
-          heights[i] = 3 + (heights[i] - 3) * 0.9 // Decay
+          heights[i] = 2 + (heights[i] - 2) * 0.92 // Smooth decay
         }
 
-        // Peak tracking
+        // Peak hold with 300ms hold time
         if (heights[i] > peaks[i]) {
           peaks[i] = heights[i]
+          peakHold[i] = 0
         } else {
-          peaks[i] = Math.max(heights[i], peaks[i] * 0.97)
+          peakHold[i] += 0.016
+          if (peakHold[i] > 0.3) {
+            peaks[i] = Math.max(heights[i], peaks[i] * 0.96)
+          }
+        }
+
+        // Adjacent bar smoothing
+        if (i > 0 && i < barCount - 1) {
+          heights[i] = heights[i] * 0.85 + (heights[i - 1] + heights[i + 1]) * 0.075
         }
 
         // Draw bar
@@ -110,23 +152,39 @@ export function SpectrumAnalyzer() {
         const y = height - barHeight
 
         // Color gradient based on frequency
-        const hue = 220 + normalizedIndex * 100
-        const lightness = 50 + (heights[i] / 100) * 20
+        const hue = 220 + normalizedIndex * 110
+        const saturation = 70 + (heights[i] / 100) * 20
+        const lightness = 50 + (heights[i] / 100) * 25
 
+        // Create vertical gradient for bar
         const gradient = ctx.createLinearGradient(x, height, x, y)
-        gradient.addColorStop(0, `hsla(${hue}, 70%, ${lightness * 0.6}%, 0.9)`)
-        gradient.addColorStop(1, `hsla(${hue + 20}, 75%, ${lightness}%, 0.85)`)
+        gradient.addColorStop(0, `hsla(${hue}, ${saturation}%, ${lightness * 0.5}%, 0.9)`)
+        gradient.addColorStop(0.4, `hsla(${hue + 10}, ${saturation}%, ${lightness * 0.8}%, 0.95)`)
+        gradient.addColorStop(1, `hsla(${hue + 25}, ${saturation}%, ${lightness}%, 0.85)`)
+
+        // Glow effect for active bars (desktop only)
+        if (showGlow && heights[i] > 25) {
+          ctx.shadowColor = `hsla(${hue}, ${saturation}%, ${lightness}%, 0.6)`
+          ctx.shadowBlur = heights[i] / 6
+        }
 
         ctx.fillStyle = gradient
         ctx.beginPath()
-        ctx.roundRect(x, y, barWidth, barHeight, [2, 2, 0, 0])
+        const radius = Math.min(barWidth / 2, 3)
+        ctx.roundRect(x, y, barWidth, barHeight, [radius, radius, 0, 0])
         ctx.fill()
+        ctx.shadowBlur = 0
 
-        // Peak indicator
-        if (peaks[i] > heights[i] + 3) {
+        // Peak indicator with glow
+        if (peaks[i] > heights[i] + 2) {
           const peakY = height - (peaks[i] / 100) * height
-          ctx.fillStyle = `hsla(${hue + 15}, 80%, 65%, 0.7)`
+          ctx.fillStyle = `hsla(${hue + 20}, 85%, 70%, 0.85)`
+          if (showGlow) {
+            ctx.shadowColor = `hsla(${hue + 20}, 90%, 75%, 0.5)`
+            ctx.shadowBlur = 4
+          }
           ctx.fillRect(x, peakY, barWidth, 2)
+          ctx.shadowBlur = 0
         }
       }
 
@@ -137,6 +195,7 @@ export function SpectrumAnalyzer() {
     window.addEventListener('resize', updateSize)
     window.addEventListener('mousemove', handleMouseMove)
     window.addEventListener('touchmove', handleTouchMove, { passive: true })
+    window.addEventListener('touchstart', handleTouchMove as EventListener, { passive: true })
 
     animationRef.current = requestAnimationFrame(draw)
 
@@ -144,6 +203,7 @@ export function SpectrumAnalyzer() {
       window.removeEventListener('resize', updateSize)
       window.removeEventListener('mousemove', handleMouseMove)
       window.removeEventListener('touchmove', handleTouchMove)
+      window.removeEventListener('touchstart', handleTouchMove as EventListener)
       if (animationRef.current) cancelAnimationFrame(animationRef.current)
     }
   }, [])
@@ -151,7 +211,7 @@ export function SpectrumAnalyzer() {
   return (
     <canvas
       ref={canvasRef}
-      className="absolute bottom-0 left-0 right-0 h-20 md:h-24 pointer-events-none"
+      className="absolute bottom-0 left-0 right-0 h-20 sm:h-24 md:h-28 pointer-events-none"
       style={{ width: '100%' }}
     />
   )
