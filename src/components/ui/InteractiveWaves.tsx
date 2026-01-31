@@ -212,16 +212,6 @@ export function InteractiveWaves() {
       ref={containerRef}
       className="absolute inset-0 overflow-hidden touch-none"
     >
-      {/* Subtle radial gradient following mouse/touch */}
-      <motion.div
-        className="absolute w-[400px] h-[400px] md:w-[600px] md:h-[600px] rounded-full pointer-events-none"
-        style={{
-          background: 'radial-gradient(circle, rgba(124, 58, 237, 0.1) 0%, rgba(139, 92, 246, 0.05) 40%, transparent 70%)',
-          x: useTransform(mouseX, [0, 1], [-200, dimensions.width - 200]),
-          y: useTransform(mouseY, [0, 1], [-200, dimensions.height - 200]),
-        }}
-      />
-
       {/* Wave SVG */}
       <svg
         className="absolute inset-0 w-full h-full"
