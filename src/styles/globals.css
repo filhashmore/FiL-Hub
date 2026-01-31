@@ -30,16 +30,23 @@
   body {
     @apply bg-background text-foreground antialiased;
     font-feature-settings: "rlig" 1, "calt" 1;
+    /* Prevent text rendering issues on iOS */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
   html {
     scroll-behavior: smooth;
+    /* Fix iOS momentum scrolling */
+    -webkit-overflow-scrolling: touch;
   }
 }
 
 @layer components {
   .gradient-text {
     @apply bg-gradient-to-r from-accent-bass-bright via-accent-mid to-accent-treble bg-clip-text text-transparent;
+    /* Safari fix for gradient text */
+    -webkit-background-clip: text;
   }
 
   .gradient-border {
@@ -50,10 +57,35 @@
 
   .card {
     @apply bg-surface rounded-lg border border-border transition-all duration-200;
+    /* Force GPU layer for smoother animations */
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
   }
 
   .card:hover {
     @apply bg-surface-hover border-accent-mid/50;
+  }
+}
+
+/* Safari/iOS specific fixes */
+@supports (-webkit-touch-callout: none) {
+  /* Fix sticky header rendering on Safari */
+  header {
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+  }
+
+  /* Fix canvas rendering on Safari */
+  canvas {
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+  }
+}
+
+/* Fix backdrop-filter for older browsers */
+@supports not (backdrop-filter: blur(1px)) {
+  header {
+    background-color: var(--background) !important;
   }
 }
 
@@ -81,4 +113,19 @@
 /* Selection */
 ::selection {
   @apply bg-accent-mid/30;
+}
+
+/* Reduce motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  html {
+    scroll-behavior: auto;
+  }
 }

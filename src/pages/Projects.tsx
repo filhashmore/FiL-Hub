@@ -12,9 +12,9 @@ export function Projects() {
 
   return (
     <div className="relative min-h-screen">
-      {/* Scroll progress bar - GPU accelerated with transform */}
+      {/* Scroll progress bar - positioned below header */}
       <motion.div
-        className="fixed top-0 left-0 right-0 h-0.5 z-50 origin-left
+        className="fixed top-16 left-0 right-0 h-0.5 z-40 origin-left
                    bg-gradient-to-r from-accent-bass via-accent-mid to-accent-treble"
         style={{ scaleX: smoothProgress }}
       />
