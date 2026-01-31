@@ -11,6 +11,31 @@ const iconMap: Record<string, React.ElementType> = {
   'Supabase & serverless backends': Database,
 }
 
+// Simple container with stagger
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.06,
+      delayChildren: 0.15,
+    },
+  },
+}
+
+// Card animation - simple fade up
+const cardVariants = {
+  hidden: { opacity: 0, y: 16 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.35,
+      ease: [0.25, 0.1, 0.25, 1],
+    },
+  },
+}
+
 export function About() {
   return (
     <section id="about" className="py-16 md:py-24 bg-surface/30">
@@ -18,8 +43,8 @@ export function About() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
           className="max-w-4xl mx-auto"
         >
           {/* Section header */}
@@ -29,28 +54,25 @@ export function About() {
           </div>
 
           {/* Bio */}
-          <motion.p
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.2 }}
-            className="text-lg text-muted-foreground text-center mb-12"
-          >
+          <p className="text-lg text-muted-foreground text-center mb-12">
             {siteConfig.about.bio}
-          </motion.p>
+          </p>
 
-          {/* Skills grid - 6 items in 2 rows of 3 */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {siteConfig.about.highlights.map((skill, index) => {
+          {/* Skills grid with staggered animation */}
+          <motion.div
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-50px" }}
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
+          >
+            {siteConfig.about.highlights.map((skill) => {
               const Icon = iconMap[skill] || Code
               return (
                 <motion.div
                   key={skill}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: index * 0.1 }}
-                  className="card p-4 flex items-center gap-3"
+                  variants={cardVariants}
+                  className="card p-4 flex items-center gap-3 transition-transform duration-200 hover:-translate-y-0.5"
                 >
                   <div className="p-2 rounded-md bg-accent-mid/10">
                     <Icon className="h-5 w-5 text-accent-mid-bright" />
@@ -59,7 +81,7 @@ export function About() {
                 </motion.div>
               )
             })}
-          </div>
+          </motion.div>
         </motion.div>
       </div>
     </section>

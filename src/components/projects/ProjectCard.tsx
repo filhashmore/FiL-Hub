@@ -9,18 +9,20 @@ interface ProjectCardProps {
   project: Project
 }
 
-// Card animation variant - uses transform/opacity only (GPU accelerated)
+// Card animation - more visible entrance
 const cardVariants = {
   hidden: {
     opacity: 0,
-    y: 20,
+    y: 30,
+    scale: 0.96,
   },
   visible: {
     opacity: 1,
     y: 0,
+    scale: 1,
     transition: {
-      duration: 0.4,
-      ease: [0.25, 0.1, 0.25, 1.0], // smooth ease-out
+      duration: 0.45,
+      ease: [0.25, 0.1, 0.25, 1.0],
     },
   },
 }
@@ -32,15 +34,15 @@ export function ProjectCard({ project }: ProjectCardProps) {
     <motion.article
       variants={cardVariants}
       className="card p-6 flex flex-col h-full relative overflow-hidden group
-                 transition-transform duration-200 ease-out hover:-translate-y-1
+                 transition-all duration-200 ease-out hover:-translate-y-1 hover:shadow-lg
                  will-change-transform"
     >
-      {/* Hover glow - pure CSS for performance */}
+      {/* Hover glow - pure CSS */}
       <div
         className="absolute inset-0 opacity-0 group-hover:opacity-100
                    transition-opacity duration-300 pointer-events-none"
       >
-        <div className="absolute inset-0 bg-gradient-to-br from-accent-bass/6 via-transparent to-accent-treble/6" />
+        <div className="absolute inset-0 bg-gradient-to-br from-accent-bass/8 via-transparent to-accent-treble/8" />
       </div>
 
       <div className="relative z-10">
