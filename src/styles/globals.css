@@ -30,22 +30,33 @@
   body {
     @apply bg-background text-foreground antialiased;
     font-feature-settings: "rlig" 1, "calt" 1;
-    /* Prevent text rendering issues on iOS */
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    /* Prevent layout shifts during loading */
+    overflow-x: hidden;
+    /* Optimize text rendering */
+    text-rendering: optimizeLegibility;
   }
 
   html {
     scroll-behavior: smooth;
-    /* Fix iOS momentum scrolling */
     -webkit-overflow-scrolling: touch;
+    /* Prevent overscroll bounce on iOS */
+    overscroll-behavior: none;
+  }
+
+  /* Optimize images globally */
+  img, video, canvas {
+    max-width: 100%;
+    height: auto;
+    /* Prevent layout shifts */
+    content-visibility: auto;
   }
 }
 
 @layer components {
   .gradient-text {
     @apply bg-gradient-to-r from-accent-bass-bright via-accent-mid to-accent-treble bg-clip-text text-transparent;
-    /* Safari fix for gradient text */
     -webkit-background-clip: text;
   }
 
@@ -56,14 +67,42 @@
   }
 
   .card {
-    @apply bg-surface rounded-lg border border-border transition-all duration-200;
-    /* Force GPU layer for smoother animations */
-    transform: translateZ(0);
-    -webkit-transform: translateZ(0);
+    @apply bg-surface rounded-lg border border-border;
+    /* GPU acceleration for smooth transforms */
+    transform: translate3d(0, 0, 0);
+    backface-visibility: hidden;
+    /* Smooth transitions */
+    transition: transform 0.25s cubic-bezier(0.33, 1, 0.68, 1),
+                background-color 0.2s ease,
+                border-color 0.2s ease,
+                box-shadow 0.25s ease;
   }
 
   .card:hover {
     @apply bg-surface-hover border-accent-mid/50;
+  }
+
+  /* Smooth scroll container for all scrollable areas */
+  .smooth-scroll {
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-y: contain;
+  }
+
+  /* Optimized animation container */
+  .animate-in {
+    animation: animate-in 0.4s cubic-bezier(0.33, 1, 0.68, 1) forwards;
+  }
+
+  @keyframes animate-in {
+    from {
+      opacity: 0;
+      transform: translate3d(0, 16px, 0);
+    }
+    to {
+      opacity: 1;
+      transform: translate3d(0, 0, 0);
+    }
   }
 }
 
@@ -128,4 +167,68 @@
   html {
     scroll-behavior: auto;
   }
+}
+
+/* Touch device optimizations */
+@media (hover: none) and (pointer: coarse) {
+  .card {
+    /* Disable hover transforms on touch - use active state instead */
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+  }
+
+  .card:active {
+    @apply bg-surface-hover border-accent-mid/50;
+    transform: scale(0.98);
+  }
+
+  /* Larger touch targets */
+  button, a {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* High refresh rate optimization */
+@media (prefers-reduced-motion: no-preference) {
+  .card,
+  button,
+  a {
+    will-change: transform;
+  }
+}
+
+/* App Clip / PWA optimizations */
+@supports (display: standalone) {
+  body {
+    /* Safe area insets for notched devices */
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+}
+
+/* Container queries for responsive components */
+@container (max-width: 640px) {
+  .responsive-text {
+    font-size: 0.875rem;
+  }
+}
+
+/* Skeleton loading animation */
+.skeleton {
+  @apply bg-surface animate-pulse;
+  background: linear-gradient(
+    90deg,
+    var(--surface) 25%,
+    var(--surface-hover) 50%,
+    var(--surface) 75%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s ease-in-out infinite;
+}
+
+@keyframes skeleton-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
 }

@@ -1,16 +1,30 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { Menu, X, Github } from 'lucide-react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
 import { Button } from '@/components/ui/Button'
 import { ThemeToggle } from '@/components/ui/ThemeToggle'
 import { navigationConfig, socialLinks } from '@/config/navigation.config'
 import { cn } from '@/lib/utils'
 
+// Optimized spring config for smooth animations
+const springConfig = { type: 'spring', stiffness: 400, damping: 30 }
+
 export function Header() {
   const [isOpen, setIsOpen] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
   const location = useLocation()
   const navigate = useNavigate()
+  const shouldReduceMotion = useReducedMotion()
+
+  // Track scroll position for header styling
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20)
+    }
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
 
   const isActive = (href: string) => {
     if (href === '/') return location.pathname === '/'
@@ -50,11 +64,31 @@ export function Header() {
   )
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur-md supports-[backdrop-filter]:bg-background/80" style={{ WebkitBackdropFilter: 'blur(12px)' }}>
+    <motion.header 
+      initial={{ y: -100 }}
+      animate={{ y: 0 }}
+      transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+      className={cn(
+        "sticky top-0 z-50 w-full border-b transition-all duration-300",
+        scrolled 
+          ? "border-border bg-background/95 backdrop-blur-md supports-[backdrop-filter]:bg-background/80" 
+          : "border-transparent bg-transparent"
+      )}
+      style={{ 
+        WebkitBackdropFilter: scrolled ? 'blur(12px)' : 'none',
+        willChange: 'background-color, border-color',
+      }}
+    >
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2">
-          <span className="text-xl font-bold gradient-text">FiL Hub</span>
+          <motion.span 
+            className="text-xl font-bold gradient-text"
+            whileHover={shouldReduceMotion ? {} : { scale: 1.02 }}
+            transition={springConfig}
+          >
+            FiL Hub
+          </motion.span>
         </Link>
 
         {/* Desktop Navigation */}
@@ -131,51 +165,66 @@ export function Header() {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="md:hidden border-t border-border bg-background"
+            transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+            className="md:hidden border-t border-border bg-background/98 backdrop-blur-lg overflow-hidden"
+            style={{ WebkitBackdropFilter: 'blur(12px)' }}
           >
-            <nav className="container mx-auto flex flex-col gap-2 p-4">
-              {navigationConfig.map((item) =>
+            <nav className="container mx-auto flex flex-col gap-1 p-4">
+              {navigationConfig.map((item, index) =>
                 item.href.startsWith('/#') ? (
-                  <a
+                  <motion.a
                     key={item.href}
                     href={item.href}
                     onClick={(e) => handleNavClick(e, item.href)}
-                    className="px-4 py-2 rounded-md text-sm font-medium text-muted-foreground hover:bg-surface hover:text-foreground cursor-pointer"
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.05 }}
+                    className="px-4 py-3 rounded-md text-sm font-medium text-muted-foreground hover:bg-surface hover:text-foreground cursor-pointer active:bg-surface-hover"
                   >
                     {item.label}
-                  </a>
+                  </motion.a>
                 ) : (
-                  <Link
+                  <motion.div
                     key={item.href}
-                    to={item.href}
-                    onClick={() => setIsOpen(false)}
-                    className={cn(
-                      'px-4 py-2 rounded-md text-sm font-medium transition-colors',
-                      isActive(item.href)
-                        ? 'bg-surface text-foreground'
-                        : 'text-muted-foreground hover:bg-surface hover:text-foreground'
-                    )}
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.05 }}
                   >
-                    {item.label}
-                  </Link>
+                    <Link
+                      to={item.href}
+                      onClick={() => setIsOpen(false)}
+                      className={cn(
+                        'block px-4 py-3 rounded-md text-sm font-medium transition-colors active:bg-surface-hover',
+                        isActive(item.href)
+                          ? 'bg-surface text-foreground'
+                          : 'text-muted-foreground hover:bg-surface hover:text-foreground'
+                      )}
+                    >
+                      {item.label}
+                    </Link>
+                  </motion.div>
                 )
               )}
-              {socialLinks.map((link) => (
-                <a
+              <div className="h-px bg-border my-2" />
+              {socialLinks.map((link, index) => (
+                <motion.a
                   key={link.href}
                   href={link.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="px-4 py-2 rounded-md text-sm font-medium text-muted-foreground hover:bg-surface hover:text-foreground flex items-center gap-2"
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: (navigationConfig.length + index) * 0.05 }}
+                  className="px-4 py-3 rounded-md text-sm font-medium text-muted-foreground hover:bg-surface hover:text-foreground flex items-center gap-2 active:bg-surface-hover"
                 >
                   <Github className="h-4 w-4" />
                   {link.label}
-                </a>
+                </motion.a>
               ))}
             </nav>
           </motion.div>
         )}
       </AnimatePresence>
-    </header>
+    </motion.header>
   )
 }

@@ -91,6 +91,22 @@
     <!-- Preconnect for performance -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="dns-prefetch" href="https://github.com" />
+
+    <!-- Preload critical assets -->
+    <link rel="modulepreload" href="/src/main.tsx" />
+
+    <!-- Inline critical CSS for loading state -->
+    <style>
+      /* Prevent FOUC and show loading state */
+      html { background-color: #0a0a0a; }
+      html.light { background-color: #fafafa; }
+      #root { min-height: 100vh; min-height: 100dvh; }
+      /* Smooth page transitions */
+      html { scroll-behavior: smooth; }
+      @media (prefers-reduced-motion: reduce) {
+        html { scroll-behavior: auto; }
+      }
+    </style>
   </head>
   <body>
     <div id="root"></div>

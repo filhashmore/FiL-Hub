@@ -1,24 +1,14 @@
-import { motion, useScroll, useSpring } from 'framer-motion'
+import { motion, useReducedMotion } from 'framer-motion'
 import { ProjectGrid } from '@/components/projects/ProjectGrid'
 
+// Optimized easing
+const easeOutExpo = [0.16, 1, 0.3, 1]
+
 export function Projects() {
-  // Scroll progress for the progress bar only
-  const { scrollYProgress } = useScroll()
-  const smoothProgress = useSpring(scrollYProgress, {
-    stiffness: 100,
-    damping: 30,
-    restDelta: 0.001,
-  })
+  const shouldReduceMotion = useReducedMotion()
 
   return (
     <div className="relative min-h-screen">
-      {/* Scroll progress bar - positioned below header */}
-      <motion.div
-        className="fixed top-16 left-0 right-0 h-0.5 z-40 origin-left
-                   bg-gradient-to-r from-accent-bass via-accent-mid to-accent-treble"
-        style={{ scaleX: smoothProgress }}
-      />
-
       {/* Simple static background - no scroll-linked animations */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden -z-10">
         {/* Gradient orbs - static, no animation */}
@@ -56,41 +46,56 @@ export function Projects() {
 
       <div className="py-16 md:py-24 relative">
         <div className="container mx-auto px-4">
-          {/* Page header - simple fade in */}
+          {/* Page header */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
+            transition={{ duration: 0.5, ease: easeOutExpo }}
             className="text-center mb-16"
           >
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 text-balance">
               All <span className="gradient-text">Projects</span>
             </h1>
 
-            <div className="w-24 h-1 bg-gradient-to-r from-accent-bass via-accent-mid to-accent-treble mx-auto rounded-full mb-6" />
+            <motion.div
+              initial={{ scaleX: 0 }}
+              animate={{ scaleX: 1 }}
+              transition={{ duration: 0.6, delay: 0.2, ease: easeOutExpo }}
+              className="w-24 h-1 bg-gradient-to-r from-accent-bass via-accent-mid to-accent-treble mx-auto rounded-full mb-6 origin-center"
+            />
 
-            <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.3, duration: 0.5 }}
+              className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto text-pretty"
+            >
               A complete collection of tools, apps, and experiments I've built for
               the touring music industry and beyond.
-            </p>
+            </motion.p>
           </motion.div>
 
           {/* Projects grid */}
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.4, delay: 0.2 }}
+            initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.2, ease: easeOutExpo }}
           >
             <ProjectGrid showFilter={true} />
           </motion.div>
 
           {/* Bottom section */}
-          <div className="mt-20 text-center">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5, duration: 0.5 }}
+            className="mt-20 text-center"
+          >
             <p className="text-muted-foreground mb-4">
               More projects coming soon. Follow along on GitHub.
             </p>
             <div className="w-16 h-0.5 bg-gradient-to-r from-transparent via-accent-mid/40 to-transparent mx-auto rounded-full" />
-          </div>
+          </motion.div>
         </div>
       </div>
     </div>

@@ -1,8 +1,10 @@
+import { motion, useReducedMotion } from 'framer-motion'
 import { Github, Mail } from 'lucide-react'
 import { siteConfig } from '@/config/site.config'
 
 export function Footer() {
   const currentYear = new Date().getFullYear()
+  const shouldReduceMotion = useReducedMotion()
 
   return (
     <footer className="border-t border-border bg-surface/50">
@@ -18,27 +20,33 @@ export function Footer() {
 
           {/* Social Links */}
           <div className="flex items-center gap-4">
-            <a
+            <motion.a
               href={siteConfig.githubUrl}
               target="_blank"
               rel="noopener noreferrer"
+              whileHover={shouldReduceMotion ? {} : { scale: 1.1, y: -2 }}
+              whileTap={shouldReduceMotion ? {} : { scale: 0.95 }}
+              transition={{ type: 'spring', stiffness: 400, damping: 25 }}
               className="text-muted-foreground hover:text-foreground transition-colors"
               aria-label="GitHub"
             >
               <Github className="h-5 w-5" />
-            </a>
-            <a
+            </motion.a>
+            <motion.a
               href={`mailto:${siteConfig.email}`}
+              whileHover={shouldReduceMotion ? {} : { scale: 1.1, y: -2 }}
+              whileTap={shouldReduceMotion ? {} : { scale: 0.95 }}
+              transition={{ type: 'spring', stiffness: 400, damping: 25 }}
               className="text-muted-foreground hover:text-foreground transition-colors"
               aria-label="Email"
             >
               <Mail className="h-5 w-5" />
-            </a>
+            </motion.a>
           </div>
 
           {/* Copyright */}
           <p className="text-sm text-muted-foreground">
-            © {currentYear} CHECK ONE TWO ENTERPRISE. All rights reserved.
+            {'\u00A9'} {currentYear} CHECK ONE TWO ENTERPRISE. All rights reserved.
           </p>
         </div>
       </div>

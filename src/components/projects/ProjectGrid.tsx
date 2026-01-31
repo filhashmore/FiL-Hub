@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence, useReducedMotion, LayoutGroup } from 'framer-motion'
 import { ProjectCard } from './ProjectCard'
 import { CategoryFilter } from './CategoryFilter'
 import { getVisibleProjects } from '@/config/projects.config'
@@ -9,21 +9,29 @@ interface ProjectGridProps {
   limit?: number
 }
 
-// Container animation - simple fade
+// Optimized easing
+const easeOutExpo = [0.16, 1, 0.3, 1]
+
+// Container animation with optimized stagger
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.06,
-      delayChildren: 0.1,
+      staggerChildren: 0.04,
+      delayChildren: 0.05,
     },
+  },
+  exit: {
+    opacity: 0,
+    transition: { duration: 0.2 },
   },
 }
 
 export function ProjectGrid({ showFilter = true, limit }: ProjectGridProps) {
   const [activeCategory, setActiveCategory] = useState('all')
   const allProjects = getVisibleProjects()
+  const shouldReduceMotion = useReducedMotion()
 
   const categories = useMemo(() => {
     const cats = new Set(allProjects.map((p) => p.category))
@@ -53,26 +61,51 @@ export function ProjectGrid({ showFilter = true, limit }: ProjectGridProps) {
         />
       )}
 
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={activeCategory}
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
-          exit={{ opacity: 0, transition: { duration: 0.15 } }}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-        >
-          {filteredProjects.map((project) => (
-            <ProjectCard key={project.id} project={project} />
-          ))}
-        </motion.div>
-      </AnimatePresence>
+      <LayoutGroup>
+        <AnimatePresence mode="popLayout">
+          <motion.div
+            key={activeCategory}
+            variants={shouldReduceMotion ? {} : containerVariants}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            layout={!shouldReduceMotion}
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+            style={{ willChange: 'opacity' }}
+          >
+            {filteredProjects.map((project, index) => (
+              <motion.div
+                key={project.id}
+                layout={!shouldReduceMotion}
+                initial={shouldReduceMotion ? {} : { opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={shouldReduceMotion ? {} : { opacity: 0, scale: 0.95 }}
+                transition={{ 
+                  duration: 0.3, 
+                  ease: easeOutExpo,
+                  layout: { duration: 0.3, ease: easeOutExpo },
+                }}
+              >
+                <ProjectCard project={project} index={index} />
+              </motion.div>
+            ))}
+          </motion.div>
+        </AnimatePresence>
+      </LayoutGroup>
 
-      {filteredProjects.length === 0 && (
-        <p className="text-center text-muted-foreground py-12">
-          No projects found in this category.
-        </p>
-      )}
+      <AnimatePresence>
+        {filteredProjects.length === 0 && (
+          <motion.p
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.3, ease: easeOutExpo }}
+            className="text-center text-muted-foreground py-12"
+          >
+            No projects found in this category.
+          </motion.p>
+        )}
+      </AnimatePresence>
     </div>
   )
 }

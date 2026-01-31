@@ -1,6 +1,11 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useCallback } from 'react'
 
 const PHI = 1.618033988749
+
+// Check for reduced motion preference
+const prefersReducedMotion = () => 
+  typeof window !== 'undefined' && 
+  window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
 interface WaveConfig {
   amplitude: number
@@ -69,7 +74,12 @@ export function InteractiveWaves() {
     const canvas = canvasRef.current
     if (!canvas) return
 
-    const ctx = canvas.getContext('2d')
+    // Skip animation entirely if user prefers reduced motion
+    if (prefersReducedMotion()) {
+      return
+    }
+
+    const ctx = canvas.getContext('2d', { alpha: true })
     if (!ctx) return
 
     let width = 0
@@ -78,6 +88,19 @@ export function InteractiveWaves() {
     let waves: WaveConfig[] = DESKTOP_WAVES
     let showParticles = true
     let showGlow = true
+    let isVisible = true
+    let lastFrameTime = 0
+    const targetFPS = 60
+    const frameInterval = 1000 / targetFPS
+
+    // Use Intersection Observer for performance
+    const observer = new IntersectionObserver(
+      (entries) => {
+        isVisible = entries[0]?.isIntersecting ?? true
+      },
+      { threshold: 0.1 }
+    )
+    observer.observe(canvas)
 
     const initParticles = () => {
       const count = width < 640 ? 0 : width < 1024 ? 8 : 15
@@ -135,7 +158,21 @@ export function InteractiveWaves() {
       }
     }
 
-    const draw = () => {
+    const draw = (timestamp: number) => {
+      // Skip frames if not visible or frame rate limiting
+      if (!isVisible) {
+        animationRef.current = requestAnimationFrame(draw)
+        return
+      }
+
+      // Throttle to target FPS for consistent performance
+      const elapsed = timestamp - lastFrameTime
+      if (elapsed < frameInterval) {
+        animationRef.current = requestAnimationFrame(draw)
+        return
+      }
+      lastFrameTime = timestamp - (elapsed % frameInterval)
+
       // Smooth mouse interpolation
       mouseRef.current.x += (targetRef.current.x - mouseRef.current.x) * 0.08
       mouseRef.current.y += (targetRef.current.y - mouseRef.current.y) * 0.08
@@ -260,14 +297,15 @@ export function InteractiveWaves() {
     }
 
     updateSize()
-    window.addEventListener('resize', updateSize)
-    window.addEventListener('mousemove', handleMouseMove)
+    window.addEventListener('resize', updateSize, { passive: true })
+    window.addEventListener('mousemove', handleMouseMove, { passive: true })
     window.addEventListener('touchmove', handleTouchMove, { passive: true })
     window.addEventListener('touchstart', handleTouchMove as EventListener, { passive: true })
 
     animationRef.current = requestAnimationFrame(draw)
 
     return () => {
+      observer.disconnect()
       window.removeEventListener('resize', updateSize)
       window.removeEventListener('mousemove', handleMouseMove)
       window.removeEventListener('touchmove', handleTouchMove)
