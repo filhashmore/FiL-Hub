@@ -8,7 +8,7 @@ export const siteConfig = {
 
   hero: {
     headline: 'Building audio tools and creative tech that resonate',
-    subheadline: 'Full-stack developer • Audio engineer • 10 years touring production',
+    subheadline: '',
     cta: {
       text: 'Explore Projects',
       href: '/projects',
