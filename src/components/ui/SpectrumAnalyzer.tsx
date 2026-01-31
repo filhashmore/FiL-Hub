@@ -2,6 +2,11 @@ import { useEffect, useRef } from 'react'
 
 const PHI = 1.618033988749
 
+// Check for reduced motion preference
+const prefersReducedMotion = () =>
+  typeof window !== 'undefined' &&
+  window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
 export function SpectrumAnalyzer() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const mouseRef = useRef({ x: 0.5 })
@@ -17,7 +22,12 @@ export function SpectrumAnalyzer() {
     const canvas = canvasRef.current
     if (!canvas) return
 
-    const ctx = canvas.getContext('2d')
+    // Skip animation entirely if user prefers reduced motion
+    if (prefersReducedMotion()) {
+      return
+    }
+
+    const ctx = canvas.getContext('2d', { alpha: true })
     if (!ctx) return
 
     let width = 0
@@ -25,6 +35,19 @@ export function SpectrumAnalyzer() {
     let barCount = 48
     let dpr = 1
     let showGlow = true
+    let isVisible = true
+    let lastFrameTime = 0
+    const targetFPS = 60
+    const frameInterval = 1000 / targetFPS
+
+    // Use Intersection Observer for performance
+    const observer = new IntersectionObserver(
+      (entries) => {
+        isVisible = entries[0]?.isIntersecting ?? true
+      },
+      { threshold: 0.1 }
+    )
+    observer.observe(canvas)
 
     const updateSize = () => {
       dpr = Math.min(window.devicePixelRatio || 1, 2)
@@ -65,9 +88,23 @@ export function SpectrumAnalyzer() {
       }
     }
 
-    const draw = () => {
-      // Smooth mouse tracking
-      mouseRef.current.x += (targetRef.current.x - mouseRef.current.x) * 0.12
+    const draw = (timestamp: number) => {
+      // Skip frames if not visible
+      if (!isVisible) {
+        animationRef.current = requestAnimationFrame(draw)
+        return
+      }
+
+      // Throttle to target FPS for consistent performance
+      const elapsed = timestamp - lastFrameTime
+      if (elapsed < frameInterval) {
+        animationRef.current = requestAnimationFrame(draw)
+        return
+      }
+      lastFrameTime = timestamp - (elapsed % frameInterval)
+
+      // Smooth mouse tracking (smoother = lower value)
+      mouseRef.current.x += (targetRef.current.x - mouseRef.current.x) * 0.08
       timeRef.current += 0.016
 
       const timeSinceInteraction = Date.now() - lastInteractionRef.current
@@ -125,9 +162,9 @@ export function SpectrumAnalyzer() {
         target = Math.min(target, maxHeight)
 
         if (target > heights[i]) {
-          heights[i] += (target - heights[i]) * 0.35 // Fast attack
+          heights[i] += (target - heights[i]) * 0.25 // Smoother attack
         } else {
-          heights[i] = 2 + (heights[i] - 2) * 0.92 // Smooth decay
+          heights[i] = 2 + (heights[i] - 2) * 0.94 // Smoother decay
         }
 
         // Peak hold with 300ms hold time
@@ -141,9 +178,9 @@ export function SpectrumAnalyzer() {
           }
         }
 
-        // Adjacent bar smoothing
+        // Adjacent bar smoothing (more smoothing for fluid look)
         if (i > 0 && i < barCount - 1) {
-          heights[i] = heights[i] * 0.85 + (heights[i - 1] + heights[i + 1]) * 0.075
+          heights[i] = heights[i] * 0.7 + (heights[i - 1] + heights[i + 1]) * 0.15
         }
 
         // Draw bar
@@ -192,14 +229,15 @@ export function SpectrumAnalyzer() {
     }
 
     updateSize()
-    window.addEventListener('resize', updateSize)
-    window.addEventListener('mousemove', handleMouseMove)
+    window.addEventListener('resize', updateSize, { passive: true })
+    window.addEventListener('mousemove', handleMouseMove, { passive: true })
     window.addEventListener('touchmove', handleTouchMove, { passive: true })
     window.addEventListener('touchstart', handleTouchMove as EventListener, { passive: true })
 
     animationRef.current = requestAnimationFrame(draw)
 
     return () => {
+      observer.disconnect()
       window.removeEventListener('resize', updateSize)
       window.removeEventListener('mousemove', handleMouseMove)
       window.removeEventListener('touchmove', handleTouchMove)
@@ -212,7 +250,10 @@ export function SpectrumAnalyzer() {
     <canvas
       ref={canvasRef}
       className="absolute bottom-0 left-0 right-0 h-20 sm:h-24 md:h-28 pointer-events-none"
-      style={{ width: '100%' }}
+      style={{
+        width: '100%',
+        willChange: 'transform',
+      }}
     />
   )
 }
