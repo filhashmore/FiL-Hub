@@ -61,7 +61,7 @@ export const projectsConfig: Project[] = [
     technologies: ['React', 'Vite', 'TypeScript', 'Tailwind', 'shadcn/ui'],
     links: {
       github: 'https://github.com/filhashmore/setflow',
-      live: 'https://setflow.vercel.app',
+      live: 'https://setflow-beryl.vercel.app',
     },
     featured: true,
     visible: true,
@@ -158,7 +158,7 @@ export const projectsConfig: Project[] = [
     technologies: ['Next.js', 'TypeScript', 'Framer Motion', 'Tailwind'],
     links: {
       github: 'https://github.com/filhashmore/filmore-bio',
-      live: 'https://filmoremusic.vercel.app',
+      live: 'https://filmore-bio.vercel.app',
     },
     featured: false,
     visible: true,
