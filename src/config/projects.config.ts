@@ -112,7 +112,7 @@ export const projectsConfig: Project[] = [
       github: 'https://github.com/filhashmore/filmore-gear',
       live: 'https://filmore-gear.vercel.app',
     },
-    accessCode: 'PRESTON',
+    accessCode: 'DEMO4',
     featured: true,
     visible: true,
     order: 5,
