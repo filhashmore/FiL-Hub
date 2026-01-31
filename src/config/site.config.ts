@@ -16,13 +16,13 @@ export const siteConfig = {
   },
 
   about: {
-    bio: "Production manager for touring artist FILMORE with 10 years as a front-of-house engineer. I build web and mobile apps that solve real touring workflow problems—from RF coordination to setlist planning to venue advances.",
+    bio: "FiL Hash brings 15 years of touring music industry experience to software development—spanning FOH & monitor engineering, production management, stage management, and playback. With a parallel career in photography, visual design, and branding for performing artists, FiL builds web and mobile tools that solve real production workflow problems—from RF coordination to setlist planning to venue advances.",
     highlights: [
       'Full-stack web & mobile development',
       'React, React Native, TypeScript',
       'Audio/RF engineering expertise',
       'Touring production workflow optimization',
-      'Config-driven, offline-first architecture',
+      'Visual design & artist branding',
       'Supabase & serverless backends',
     ],
   },

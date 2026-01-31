@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { Code, Music, Wrench, Smartphone, Cloud, Database } from 'lucide-react'
+import { Code, Music, Wrench, Smartphone, Palette, Database } from 'lucide-react'
 import { siteConfig } from '@/config/site.config'
 
 const iconMap: Record<string, React.ElementType> = {
@@ -7,7 +7,7 @@ const iconMap: Record<string, React.ElementType> = {
   'React, React Native, TypeScript': Smartphone,
   'Audio/RF engineering expertise': Music,
   'Touring production workflow optimization': Wrench,
-  'Config-driven, offline-first architecture': Cloud,
+  'Visual design & artist branding': Palette,
   'Supabase & serverless backends': Database,
 }
 
@@ -49,7 +49,7 @@ export function About() {
         >
           {/* Section header */}
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">About Me</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">About FiL Hash</h2>
             <div className="w-16 h-1 bg-gradient-to-r from-accent-bass via-accent-mid to-accent-treble mx-auto rounded-full" />
           </div>
 
