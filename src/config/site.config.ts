@@ -4,7 +4,7 @@ export const siteConfig = {
   author: 'FiL Hash',
   siteUrl: 'https://fil-hub.vercel.app',
   githubUrl: 'https://github.com/filhashmore',
-  email: 'filhashmore@gmail.com',
+  email: 'filhashmore@protonmail.com',
 
   hero: {
     headline: 'Building audio tools and creative tech that resonate',
@@ -29,7 +29,7 @@ export const siteConfig = {
 
   socialLinks: [
     { label: 'GitHub', url: 'https://github.com/filhashmore', icon: 'github' },
-    { label: 'Email', url: 'mailto:filhashmore@gmail.com', icon: 'mail' },
+    { label: 'Email', url: 'mailto:filhashmore@protonmail.com', icon: 'mail' },
   ],
 
   seo: {

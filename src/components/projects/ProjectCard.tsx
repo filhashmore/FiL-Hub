@@ -70,7 +70,18 @@ export function ProjectCard({ project }: ProjectCardProps) {
             <Badge key={tech} variant="tech">{tech}</Badge>
           ))}
           {project.technologies.length > 4 && (
-            <Badge variant="secondary">+{project.technologies.length - 4}</Badge>
+            <div className="relative group/tech">
+              <Badge
+                variant="secondary"
+                className="cursor-help"
+                tabIndex={0}
+                role="button"
+                aria-label={`Show ${project.technologies.length - 4} more technologies: ${project.technologies.slice(4).join(', ')}`}
+                title={project.technologies.slice(4).join(', ')}
+              >
+                +{project.technologies.length - 4}
+              </Badge>
+            </div>
           )}
         </div>
 
