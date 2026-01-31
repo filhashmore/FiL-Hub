@@ -1,151 +1,256 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useCallback } from 'react'
 
 const BAR_COUNT = 48
 const PHI = 1.618033988749
 
-// Generate frequency-like distribution (more detail in lows/mids, less in highs)
+// Audio spectrum analyzer physics
+const ATTACK_SPEED = 0.35      // How fast bars rise (0-1, higher = faster)
+const DECAY_RATE = 0.92        // Exponential decay multiplier (0-1, higher = slower decay)
+const MINIMUM_HEIGHT = 2       // Floor level
+const SMOOTHING = 0.15         // Smoothing between adjacent bars
+
+// Generate frequency-like distribution (more energy in lows/mids)
 function getFrequencyWeight(index: number, total: number): number {
   const normalized = index / total
-  // Logarithmic-ish curve like real frequency spectrum
-  return Math.pow(1 - normalized, 0.3)
+  return Math.pow(1 - normalized, 0.4)
 }
 
 export function SpectrumAnalyzer() {
-  const [bars, setBars] = useState<number[]>(Array(BAR_COUNT).fill(10))
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const currentHeightsRef = useRef<number[]>(Array(BAR_COUNT).fill(MINIMUM_HEIGHT))
+  const targetHeightsRef = useRef<number[]>(Array(BAR_COUNT).fill(MINIMUM_HEIGHT))
+  const peakHeightsRef = useRef<number[]>(Array(BAR_COUNT).fill(MINIMUM_HEIGHT))
+  const peakDecayRef = useRef<number[]>(Array(BAR_COUNT).fill(0))
   const mousePosRef = useRef({ x: 0.5, y: 0.5 })
   const timeRef = useRef(0)
   const animationRef = useRef<number>()
-  const isHoveringRef = useRef(false)
   const lastInteractionRef = useRef(0)
 
-  // Track mouse position globally
+  // Track mouse/touch position
   useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      const x = e.clientX / window.innerWidth
-      const y = e.clientY / window.innerHeight
+    const updatePosition = (x: number, y: number) => {
       mousePosRef.current = { x, y }
-
-      // Consider "hovering" if mouse is in upper 80% of screen (wave area)
-      isHoveringRef.current = y < 0.8
-      if (isHoveringRef.current) {
+      if (y < 0.85) {
         lastInteractionRef.current = Date.now()
       }
     }
 
+    const handleMouseMove = (e: MouseEvent) => {
+      updatePosition(e.clientX / window.innerWidth, e.clientY / window.innerHeight)
+    }
+
     const handleTouchMove = (e: TouchEvent) => {
       if (e.touches.length > 0) {
-        const x = e.touches[0].clientX / window.innerWidth
-        const y = e.touches[0].clientY / window.innerHeight
-        mousePosRef.current = { x, y }
-        isHoveringRef.current = y < 0.8
-        if (isHoveringRef.current) {
-          lastInteractionRef.current = Date.now()
-        }
+        updatePosition(
+          e.touches[0].clientX / window.innerWidth,
+          e.touches[0].clientY / window.innerHeight
+        )
       }
     }
 
     window.addEventListener('mousemove', handleMouseMove)
     window.addEventListener('touchmove', handleTouchMove, { passive: true })
+    window.addEventListener('touchstart', handleTouchMove as any, { passive: true })
 
     return () => {
       window.removeEventListener('mousemove', handleMouseMove)
       window.removeEventListener('touchmove', handleTouchMove)
+      window.removeEventListener('touchstart', handleTouchMove as any)
+    }
+  }, [])
+
+  // Calculate target heights based on input
+  const calculateTargets = useCallback((time: number) => {
+    const mouseX = mousePosRef.current.x
+    const timeSinceInteraction = Date.now() - lastInteractionRef.current
+    const interactionStrength = Math.max(0, 1 - timeSinceInteraction / 1500)
+
+    for (let i = 0; i < BAR_COUNT; i++) {
+      const normalizedIndex = i / BAR_COUNT
+      const freqWeight = getFrequencyWeight(i, BAR_COUNT)
+
+      // Ambient base animation (always present, subtle)
+      let target = MINIMUM_HEIGHT
+      target += 3 + Math.sin(time * 0.4 + i * 0.15) * 2
+      target += Math.sin(time * 0.7 + i * PHI * 0.08) * 3
+      target += Math.sin(time * 1.2 + i * 0.25) * 1.5
+
+      // Mouse interaction response
+      if (interactionStrength > 0) {
+        const distance = Math.abs(normalizedIndex - mouseX)
+        const spread = 0.12
+
+        // Primary response - gaussian curve
+        const primary = Math.exp(-Math.pow(distance / spread, 2)) * 55 * freqWeight
+
+        // Harmonics for richer response
+        const h2 = Math.exp(-Math.pow(distance * 2.1 / spread, 2)) * 25 * freqWeight
+        const h3 = Math.exp(-Math.pow(distance * 3.2 / spread, 2)) * 12 * freqWeight
+
+        // Sub-bass emphasis (left side)
+        const subBass = mouseX < 0.25 && normalizedIndex < 0.12
+          ? 20 * (1 - normalizedIndex / 0.12) * (1 - mouseX / 0.25)
+          : 0
+
+        // High frequency detail (right side)
+        const highFreq = mouseX > 0.75 && normalizedIndex > 0.7
+          ? Math.sin(time * 6 + i * 0.5) * 10 * (normalizedIndex - 0.7) / 0.3
+          : 0
+
+        target += (primary + h2 + h3 + subBass + highFreq) * interactionStrength
+      }
+
+      // Apply frequency-based ceiling
+      const maxHeight = 8 + freqWeight * 75
+      targetHeightsRef.current[i] = Math.min(Math.max(target, MINIMUM_HEIGHT), maxHeight)
+    }
+  }, [])
+
+  // Apply smooth attack/decay physics
+  const applyPhysics = useCallback(() => {
+    const current = currentHeightsRef.current
+    const target = targetHeightsRef.current
+    const peaks = peakHeightsRef.current
+    const peakDecay = peakDecayRef.current
+
+    for (let i = 0; i < BAR_COUNT; i++) {
+      const targetVal = target[i]
+      let currentVal = current[i]
+
+      if (targetVal > currentVal) {
+        // Attack: fast rise toward target
+        currentVal += (targetVal - currentVal) * ATTACK_SPEED
+      } else {
+        // Release: exponential decay
+        currentVal = MINIMUM_HEIGHT + (currentVal - MINIMUM_HEIGHT) * DECAY_RATE
+        // Ensure we don't go below target if target is above minimum
+        if (currentVal < targetVal) {
+          currentVal = targetVal
+        }
+      }
+
+      current[i] = currentVal
+
+      // Peak hold with slow decay
+      if (currentVal > peaks[i]) {
+        peaks[i] = currentVal
+        peakDecay[i] = 0
+      } else {
+        peakDecay[i] += 0.016
+        if (peakDecay[i] > 0.3) { // Hold for 300ms
+          peaks[i] = Math.max(currentVal, peaks[i] * 0.96)
+        }
+      }
+    }
+
+    // Optional: slight smoothing between adjacent bars
+    const smoothed = [...current]
+    for (let i = 1; i < BAR_COUNT - 1; i++) {
+      smoothed[i] = current[i] * (1 - SMOOTHING) +
+        (current[i - 1] + current[i + 1]) * (SMOOTHING / 2)
+    }
+    currentHeightsRef.current = smoothed
+  }, [])
+
+  // Render to canvas for better performance
+  const render = useCallback(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return
+
+    const width = canvas.width
+    const height = canvas.height
+    const barWidth = (width - (BAR_COUNT - 1) * 2) / BAR_COUNT
+    const gap = 2
+
+    // Clear
+    ctx.clearRect(0, 0, width, height)
+
+    const current = currentHeightsRef.current
+    const peaks = peakHeightsRef.current
+
+    for (let i = 0; i < BAR_COUNT; i++) {
+      const barHeight = (current[i] / 100) * height
+      const peakHeight = (peaks[i] / 100) * height
+      const x = i * (barWidth + gap)
+      const y = height - barHeight
+
+      // Color based on frequency position
+      const hue = 220 + (i / BAR_COUNT) * 110
+      const saturation = 75 + (current[i] / 100) * 20
+      const lightness = 55 + (current[i] / 100) * 20
+
+      // Bar gradient
+      const gradient = ctx.createLinearGradient(x, height, x, y)
+      gradient.addColorStop(0, `hsla(${hue}, ${saturation}%, ${lightness * 0.5}%, 0.9)`)
+      gradient.addColorStop(0.5, `hsla(${hue + 15}, ${saturation}%, ${lightness}%, 0.95)`)
+      gradient.addColorStop(1, `hsla(${hue + 30}, ${saturation}%, ${lightness * 1.1}%, 0.85)`)
+
+      // Draw bar with rounded top
+      ctx.fillStyle = gradient
+      ctx.beginPath()
+      const radius = Math.min(barWidth / 2, 3)
+      ctx.roundRect(x, y, barWidth, barHeight, [radius, radius, 0, 0])
+      ctx.fill()
+
+      // Glow effect for active bars
+      if (current[i] > 30) {
+        ctx.shadowColor = `hsla(${hue}, ${saturation}%, ${lightness}%, 0.6)`
+        ctx.shadowBlur = current[i] / 8
+        ctx.fill()
+        ctx.shadowBlur = 0
+      }
+
+      // Peak indicator
+      if (peaks[i] > current[i] + 2) {
+        const peakY = height - peakHeight
+        ctx.fillStyle = `hsla(${hue + 20}, 90%, 70%, 0.8)`
+        ctx.fillRect(x, peakY, barWidth, 2)
+      }
     }
   }, [])
 
   // Animation loop
   useEffect(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+
+    // Set canvas size
+    const updateSize = () => {
+      const rect = canvas.getBoundingClientRect()
+      canvas.width = rect.width * window.devicePixelRatio
+      canvas.height = rect.height * window.devicePixelRatio
+      const ctx = canvas.getContext('2d')
+      if (ctx) {
+        ctx.scale(window.devicePixelRatio, window.devicePixelRatio)
+      }
+    }
+    updateSize()
+    window.addEventListener('resize', updateSize)
+
     const animate = () => {
       timeRef.current += 0.016
-      const time = timeRef.current
-      const mouseX = mousePosRef.current.x
-
-      // Check if recently interacted (within last 2 seconds)
-      const timeSinceInteraction = Date.now() - lastInteractionRef.current
-      const interactionFade = Math.max(0, 1 - timeSinceInteraction / 2000)
-      const isInteracting = interactionFade > 0
-
-      const newBars = Array(BAR_COUNT).fill(0).map((_, i) => {
-        const normalizedIndex = i / BAR_COUNT
-        const freqWeight = getFrequencyWeight(i, BAR_COUNT)
-
-        // Base ambient animation (always present)
-        const ambientBase = 8 + Math.sin(time * 0.5 + i * 0.2) * 4
-        const ambientPulse = Math.sin(time * (0.8 + i * 0.02) + i * PHI * 0.1) * 6
-        const ambientNoise = Math.sin(time * 2.5 + i * 1.5) * 3
-        let height = ambientBase + ambientPulse + ambientNoise
-
-        if (isInteracting) {
-          // Mouse-reactive spectrum
-          // Calculate distance from mouse X position to this bar
-          const barPosition = normalizedIndex
-          const distance = Math.abs(barPosition - mouseX)
-
-          // Create a bell curve response centered on mouse position
-          const spread = 0.15 // How wide the response is
-          const response = Math.exp(-Math.pow(distance / spread, 2))
-
-          // Add harmonics (like real audio would have overtones)
-          const fundamental = response * 45 * freqWeight
-          const harmonic2 = Math.exp(-Math.pow((distance * 2) / spread, 2)) * 20 * freqWeight
-          const harmonic3 = Math.exp(-Math.pow((distance * 3) / spread, 2)) * 10 * freqWeight
-
-          // Sub-bass boost when mouse is on left side
-          const subBoost = mouseX < 0.3 && normalizedIndex < 0.15 ? 15 * (1 - normalizedIndex / 0.15) : 0
-
-          // High-end shimmer when mouse is on right side
-          const highShimmer = mouseX > 0.7 && normalizedIndex > 0.7
-            ? Math.sin(time * 8 + i) * 8 * normalizedIndex
-            : 0
-
-          const mouseResponse = (fundamental + harmonic2 + harmonic3 + subBoost + highShimmer) * interactionFade
-          height += mouseResponse
-        }
-
-        // Add some random variation for liveliness
-        height += Math.random() * 2
-
-        // Clamp and apply frequency-based ceiling
-        const maxHeight = 15 + freqWeight * 70
-        return Math.min(Math.max(height, 3), maxHeight)
-      })
-
-      setBars(newBars)
+      calculateTargets(timeRef.current)
+      applyPhysics()
+      render()
       animationRef.current = requestAnimationFrame(animate)
     }
 
     animationRef.current = requestAnimationFrame(animate)
+
     return () => {
+      window.removeEventListener('resize', updateSize)
       if (animationRef.current) cancelAnimationFrame(animationRef.current)
     }
-  }, [])
+  }, [calculateTargets, applyPhysics, render])
 
   return (
-    <div className="absolute bottom-0 left-0 right-0 flex items-end justify-center gap-[2px] h-32 px-4 pointer-events-none">
-      {bars.map((height, i) => {
-        // Color gradient based on position (frequency)
-        const hue = 220 + (i / BAR_COUNT) * 100 // Blue to pink
-        const saturation = 70 + (height / 80) * 20
-        const lightness = 50 + (height / 80) * 15
-
-        return (
-          <div
-            key={i}
-            className="flex-1 max-w-[6px] rounded-t-sm transition-all duration-75"
-            style={{
-              height: `${height}%`,
-              background: `linear-gradient(to top,
-                hsla(${hue}, ${saturation}%, ${lightness * 0.6}%, 0.8),
-                hsla(${hue + 20}, ${saturation}%, ${lightness}%, 0.9),
-                hsla(${hue + 40}, ${saturation}%, ${lightness * 1.2}%, 0.7)
-              )`,
-              boxShadow: height > 40
-                ? `0 0 ${height / 5}px hsla(${hue}, ${saturation}%, ${lightness}%, 0.5)`
-                : 'none',
-            }}
-          />
-        )
-      })}
-    </div>
+    <canvas
+      ref={canvasRef}
+      className="absolute bottom-0 left-0 right-0 h-28 pointer-events-none"
+      style={{ width: '100%' }}
+    />
   )
 }
