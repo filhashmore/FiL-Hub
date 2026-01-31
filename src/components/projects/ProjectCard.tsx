@@ -7,31 +7,40 @@ import { cn } from '@/lib/utils'
 
 interface ProjectCardProps {
   project: Project
-  index: number
 }
 
-export function ProjectCard({ project, index }: ProjectCardProps) {
-  const statusInfo = statusLabels[project.status]
+// Card animation variant - uses transform/opacity only (GPU accelerated)
+const cardVariants = {
+  hidden: {
+    opacity: 0,
+    y: 20,
+  },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.4,
+      ease: [0.25, 0.1, 0.25, 1.0], // smooth ease-out
+    },
+  },
+}
 
-  // Stagger delay based on position
-  const delay = index * 0.08
+export function ProjectCard({ project }: ProjectCardProps) {
+  const statusInfo = statusLabels[project.status]
 
   return (
     <motion.article
-      initial={{ opacity: 0, y: 30 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20, transition: { duration: 0.2 } }}
-      transition={{
-        duration: 0.5,
-        delay: delay,
-        ease: [0.25, 0.1, 0.25, 1] // smooth cubic-bezier
-      }}
-      whileHover={{ y: -4 }}
-      className="card p-6 flex flex-col h-full relative overflow-hidden group"
+      variants={cardVariants}
+      className="card p-6 flex flex-col h-full relative overflow-hidden group
+                 transition-transform duration-200 ease-out hover:-translate-y-1
+                 will-change-transform"
     >
-      {/* Hover glow - CSS only for performance */}
-      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
-        <div className="absolute inset-0 bg-gradient-to-br from-accent-bass/8 via-transparent to-accent-treble/8" />
+      {/* Hover glow - pure CSS for performance */}
+      <div
+        className="absolute inset-0 opacity-0 group-hover:opacity-100
+                   transition-opacity duration-300 pointer-events-none"
+      >
+        <div className="absolute inset-0 bg-gradient-to-br from-accent-bass/6 via-transparent to-accent-treble/6" />
       </div>
 
       <div className="relative z-10">
@@ -95,25 +104,25 @@ export function ProjectCard({ project, index }: ProjectCardProps) {
       {/* Action buttons */}
       <div className="flex gap-2 pt-4 border-t border-border relative z-10">
         {project.links.github && (
-          <Button variant="ghost" size="sm" asChild className="flex-1 group/btn">
+          <Button variant="ghost" size="sm" asChild className="flex-1">
             <a
               href={project.links.github}
               target="_blank"
               rel="noopener noreferrer"
             >
-              <Github className="h-4 w-4 transition-transform group-hover/btn:scale-110" />
+              <Github className="h-4 w-4" />
               Code
             </a>
           </Button>
         )}
         {project.links.live && (
-          <Button variant="secondary" size="sm" asChild className="flex-1 group/btn">
+          <Button variant="secondary" size="sm" asChild className="flex-1">
             <a
               href={project.links.live}
               target="_blank"
               rel="noopener noreferrer"
             >
-              <ExternalLink className="h-4 w-4 transition-transform group-hover/btn:scale-110" />
+              <ExternalLink className="h-4 w-4" />
               Live Demo
             </a>
           </Button>

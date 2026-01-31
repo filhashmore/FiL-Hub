@@ -5,6 +5,18 @@ import { Button } from '@/components/ui/Button'
 import { ProjectCard } from '@/components/projects/ProjectCard'
 import { getFeaturedProjects } from '@/config/projects.config'
 
+// Container animation for staggered children
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.08,
+      delayChildren: 0.1,
+    },
+  },
+}
+
 export function FeaturedProjects() {
   const featuredProjects = getFeaturedProjects()
 
@@ -16,7 +28,7 @@ export function FeaturedProjects() {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
           className="text-center mb-12"
         >
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
@@ -29,22 +41,34 @@ export function FeaturedProjects() {
           </p>
         </motion.div>
 
-        {/* Project grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-          {featuredProjects.slice(0, 6).map((project, index) => (
-            <ProjectCard key={project.id} project={project} index={index} />
+        {/* Project grid with staggered animation */}
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-50px" }}
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12"
+        >
+          {featuredProjects.slice(0, 6).map((project) => (
+            <ProjectCard key={project.id} project={project} />
           ))}
-        </div>
+        </motion.div>
 
         {/* View all button */}
-        <div className="text-center">
+        <motion.div
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.4 }}
+          className="text-center"
+        >
           <Button variant="outline" size="lg" asChild>
             <Link to="/projects">
               View All Projects
               <ArrowRight className="h-4 w-4" />
             </Link>
           </Button>
-        </div>
+        </motion.div>
       </div>
     </section>
   )

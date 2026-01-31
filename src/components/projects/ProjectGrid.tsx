@@ -9,6 +9,18 @@ interface ProjectGridProps {
   limit?: number
 }
 
+// Container animation - simple fade
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.06,
+      delayChildren: 0.1,
+    },
+  },
+}
+
 export function ProjectGrid({ showFilter = true, limit }: ProjectGridProps) {
   const [activeCategory, setActiveCategory] = useState('all')
   const allProjects = getVisibleProjects()
@@ -41,16 +53,20 @@ export function ProjectGrid({ showFilter = true, limit }: ProjectGridProps) {
         />
       )}
 
-      <motion.div
-        layout
-        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-      >
-        <AnimatePresence mode="popLayout">
-          {filteredProjects.map((project, index) => (
-            <ProjectCard key={project.id} project={project} index={index} />
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={activeCategory}
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+          exit={{ opacity: 0, transition: { duration: 0.15 } }}
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+        >
+          {filteredProjects.map((project) => (
+            <ProjectCard key={project.id} project={project} />
           ))}
-        </AnimatePresence>
-      </motion.div>
+        </motion.div>
+      </AnimatePresence>
 
       {filteredProjects.length === 0 && (
         <p className="text-center text-muted-foreground py-12">
