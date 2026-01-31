@@ -19,25 +19,42 @@ interface WaveConfig {
 // Golden ratio for organic, natural-feeling wave patterns
 const PHI = 1.618033988749
 
-// Wave configurations - golden ratio phase offsets
+// Wave configurations - golden ratio phase offsets (18 fibers)
 const WAVE_CONFIGS: WaveConfig[] = [
-  { amplitude: 25, frequency: 0.008, speed: 0.4, phase: 0, yOffset: 0.3, color: '#1e40af', opacity: 0.15 },
-  { amplitude: 35, frequency: 0.006, speed: 0.3, phase: PHI, yOffset: 0.35, color: '#3b82f6', opacity: 0.12 },
-  { amplitude: 30, frequency: 0.007, speed: 0.35, phase: PHI * 2, yOffset: 0.4, color: '#6366f1', opacity: 0.18 },
-  { amplitude: 40, frequency: 0.005, speed: 0.25, phase: PHI * 3, yOffset: 0.45, color: '#7c3aed', opacity: 0.15 },
-  { amplitude: 28, frequency: 0.009, speed: 0.45, phase: PHI * 4, yOffset: 0.5, color: '#8b5cf6', opacity: 0.12 },
-  { amplitude: 45, frequency: 0.004, speed: 0.2, phase: PHI * 5, yOffset: 0.55, color: '#a855f7', opacity: 0.18 },
-  { amplitude: 32, frequency: 0.0065, speed: 0.32, phase: PHI * 6, yOffset: 0.6, color: '#c026d3', opacity: 0.14 },
-  { amplitude: 38, frequency: 0.0055, speed: 0.28, phase: PHI * 7, yOffset: 0.65, color: '#db2777', opacity: 0.16 },
-  { amplitude: 22, frequency: 0.01, speed: 0.5, phase: PHI * 8, yOffset: 0.7, color: '#ec4899', opacity: 0.12 },
+  // Deep blues - top area
+  { amplitude: 20, frequency: 0.009, speed: 0.45, phase: 0, yOffset: 0.18, color: '#1e3a8a', opacity: 0.12 },
+  { amplitude: 28, frequency: 0.007, speed: 0.38, phase: PHI * 0.5, yOffset: 0.22, color: '#1e40af', opacity: 0.14 },
+  { amplitude: 24, frequency: 0.008, speed: 0.42, phase: PHI, yOffset: 0.26, color: '#2563eb', opacity: 0.13 },
+  // Blues to indigo
+  { amplitude: 32, frequency: 0.006, speed: 0.32, phase: PHI * 1.5, yOffset: 0.30, color: '#3b82f6', opacity: 0.15 },
+  { amplitude: 26, frequency: 0.0075, speed: 0.36, phase: PHI * 2, yOffset: 0.34, color: '#4f46e5', opacity: 0.12 },
+  { amplitude: 35, frequency: 0.0055, speed: 0.28, phase: PHI * 2.5, yOffset: 0.38, color: '#6366f1', opacity: 0.16 },
+  // Indigo to violet
+  { amplitude: 30, frequency: 0.0065, speed: 0.34, phase: PHI * 3, yOffset: 0.42, color: '#7c3aed', opacity: 0.14 },
+  { amplitude: 38, frequency: 0.005, speed: 0.26, phase: PHI * 3.5, yOffset: 0.46, color: '#8b5cf6', opacity: 0.17 },
+  { amplitude: 28, frequency: 0.007, speed: 0.38, phase: PHI * 4, yOffset: 0.50, color: '#a855f7', opacity: 0.13 },
+  // Violet to purple
+  { amplitude: 42, frequency: 0.0045, speed: 0.22, phase: PHI * 4.5, yOffset: 0.54, color: '#9333ea', opacity: 0.18 },
+  { amplitude: 32, frequency: 0.006, speed: 0.32, phase: PHI * 5, yOffset: 0.58, color: '#a855f7', opacity: 0.14 },
+  { amplitude: 36, frequency: 0.0052, speed: 0.28, phase: PHI * 5.5, yOffset: 0.62, color: '#c026d3', opacity: 0.16 },
+  // Purple to pink
+  { amplitude: 30, frequency: 0.0068, speed: 0.35, phase: PHI * 6, yOffset: 0.66, color: '#d946ef', opacity: 0.13 },
+  { amplitude: 40, frequency: 0.0048, speed: 0.24, phase: PHI * 6.5, yOffset: 0.70, color: '#db2777', opacity: 0.17 },
+  { amplitude: 26, frequency: 0.0072, speed: 0.4, phase: PHI * 7, yOffset: 0.74, color: '#ec4899', opacity: 0.12 },
+  // Pinks - bottom area
+  { amplitude: 34, frequency: 0.0058, speed: 0.3, phase: PHI * 7.5, yOffset: 0.78, color: '#f472b6', opacity: 0.15 },
+  { amplitude: 22, frequency: 0.008, speed: 0.44, phase: PHI * 8, yOffset: 0.82, color: '#fb7185', opacity: 0.11 },
+  { amplitude: 28, frequency: 0.0062, speed: 0.34, phase: PHI * 8.5, yOffset: 0.86, color: '#fda4af', opacity: 0.13 },
 ]
 
-// Mobile-optimized configs (fewer waves, simpler)
+// Mobile-optimized configs (fewer waves, simpler - 7 fibers)
 const MOBILE_WAVE_CONFIGS: WaveConfig[] = [
-  { amplitude: 20, frequency: 0.01, speed: 0.35, phase: 0, yOffset: 0.35, color: '#3b82f6', opacity: 0.15 },
-  { amplitude: 30, frequency: 0.007, speed: 0.25, phase: PHI * 2, yOffset: 0.45, color: '#7c3aed', opacity: 0.18 },
-  { amplitude: 35, frequency: 0.005, speed: 0.2, phase: PHI * 4, yOffset: 0.55, color: '#a855f7', opacity: 0.2 },
-  { amplitude: 25, frequency: 0.008, speed: 0.3, phase: PHI * 6, yOffset: 0.65, color: '#db2777', opacity: 0.15 },
+  { amplitude: 18, frequency: 0.01, speed: 0.38, phase: 0, yOffset: 0.28, color: '#3b82f6', opacity: 0.14 },
+  { amplitude: 25, frequency: 0.008, speed: 0.32, phase: PHI * 1.5, yOffset: 0.38, color: '#6366f1', opacity: 0.16 },
+  { amplitude: 30, frequency: 0.006, speed: 0.26, phase: PHI * 3, yOffset: 0.48, color: '#8b5cf6', opacity: 0.18 },
+  { amplitude: 28, frequency: 0.007, speed: 0.3, phase: PHI * 4.5, yOffset: 0.58, color: '#a855f7', opacity: 0.16 },
+  { amplitude: 32, frequency: 0.0055, speed: 0.24, phase: PHI * 6, yOffset: 0.68, color: '#d946ef', opacity: 0.17 },
+  { amplitude: 24, frequency: 0.0075, speed: 0.34, phase: PHI * 7.5, yOffset: 0.78, color: '#ec4899', opacity: 0.14 },
 ]
 
 export function InteractiveWaves() {
