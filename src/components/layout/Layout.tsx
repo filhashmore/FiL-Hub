@@ -4,7 +4,6 @@ import { AnimatePresence } from 'framer-motion'
 import { Header } from './Header'
 import { Footer } from './Footer'
 import { PageTransition } from '@/components/ui/PageTransition'
-import { ScrollProgress } from '@/components/ui/ScrollProgress'
 import { LoadingScreen } from '@/components/ui/LoadingScreen'
 
 export function Layout() {
@@ -24,7 +23,6 @@ export function Layout() {
       </AnimatePresence>
 
       <Header />
-      <ScrollProgress />
 
       <main className="flex-1 relative">
         <Suspense fallback={<div className="min-h-screen" />}>

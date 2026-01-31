@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { Menu, X, Github } from 'lucide-react'
-import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
+import { motion, AnimatePresence, useReducedMotion, useScroll, useSpring, useTransform } from 'framer-motion'
 import { Button } from '@/components/ui/Button'
 import { ThemeToggle } from '@/components/ui/ThemeToggle'
 import { navigationConfig, socialLinks } from '@/config/navigation.config'
@@ -25,6 +25,15 @@ export function Header() {
     window.addEventListener('scroll', handleScroll, { passive: true })
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
+
+  // Scroll progress for the progress bar
+  const { scrollYProgress } = useScroll()
+  const smoothProgress = useSpring(scrollYProgress, {
+    stiffness: 150,
+    damping: 25,
+    restDelta: 0.0001,
+  })
+  const progressOpacity = useTransform(smoothProgress, [0, 0.02], [0, 1])
 
   const isActive = (href: string) => {
     if (href === '/') return location.pathname === '/'
@@ -157,6 +166,17 @@ export function Header() {
           </Button>
         </div>
       </div>
+
+      {/* Scroll Progress Bar - attached to bottom of header */}
+      <motion.div
+        className="absolute bottom-0 left-0 right-0 h-[2px] origin-left pointer-events-none"
+        style={{ 
+          scaleX: smoothProgress,
+          opacity: progressOpacity,
+          background: 'linear-gradient(90deg, #3b82f6 0%, #7c3aed 50%, #ec4899 100%)',
+          willChange: 'transform, opacity',
+        }}
+      />
 
       {/* Mobile Navigation */}
       <AnimatePresence>
