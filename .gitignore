@@ -46,3 +46,4 @@ _DELETE_ME
 vite.config.js
 vite.config.d.ts
 vite.config.js.timestamp-*
+vite.config.ts.timestamp-*
