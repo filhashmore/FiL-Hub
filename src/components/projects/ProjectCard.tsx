@@ -1,4 +1,5 @@
-import { motion } from 'framer-motion'
+import { useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { ExternalLink, Github, Key } from 'lucide-react'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
@@ -29,6 +30,9 @@ const cardVariants = {
 
 export function ProjectCard({ project }: ProjectCardProps) {
   const statusInfo = statusLabels[project.status]
+  const [showAllTech, setShowAllTech] = useState(false)
+  const visibleTech = showAllTech ? project.technologies : project.technologies.slice(0, 4)
+  const hiddenCount = project.technologies.length - 4
 
   return (
     <motion.article
@@ -66,22 +70,40 @@ export function ProjectCard({ project }: ProjectCardProps) {
 
         {/* Tech stack badges */}
         <div className="flex flex-wrap gap-2 mb-4">
-          {project.technologies.slice(0, 4).map((tech) => (
-            <Badge key={tech} variant="tech">{tech}</Badge>
-          ))}
-          {project.technologies.length > 4 && (
-            <div className="relative group/tech">
-              <Badge
-                variant="secondary"
-                className="cursor-help"
-                tabIndex={0}
-                role="button"
-                aria-label={`Show ${project.technologies.length - 4} more technologies: ${project.technologies.slice(4).join(', ')}`}
-                title={project.technologies.slice(4).join(', ')}
+          <AnimatePresence mode="popLayout">
+            {visibleTech.map((tech) => (
+              <motion.div
+                key={tech}
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.8 }}
+                transition={{ duration: 0.15 }}
               >
-                +{project.technologies.length - 4}
-              </Badge>
-            </div>
+                <Badge variant="tech">{tech}</Badge>
+              </motion.div>
+            ))}
+          </AnimatePresence>
+          {hiddenCount > 0 && !showAllTech && (
+            <Badge
+              variant="secondary"
+              className="cursor-pointer hover:bg-accent-mid/20 transition-colors"
+              onClick={() => setShowAllTech(true)}
+              role="button"
+              aria-label={`Show ${hiddenCount} more technologies`}
+            >
+              +{hiddenCount}
+            </Badge>
+          )}
+          {showAllTech && hiddenCount > 0 && (
+            <Badge
+              variant="secondary"
+              className="cursor-pointer hover:bg-accent-mid/20 transition-colors"
+              onClick={() => setShowAllTech(false)}
+              role="button"
+              aria-label="Show fewer technologies"
+            >
+              −
+            </Badge>
           )}
         </div>
 
