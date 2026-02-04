@@ -165,6 +165,22 @@ export const projectsConfig: Project[] = [
     order: 8,
   },
   {
+    id: 'deej-gala-music',
+    title: 'Deej Gala Music',
+    description: 'Music artist website for DEEJ GALA',
+    longDescription: 'Cyberpunk-styled artist showcase with hero parallax, discography, gallery, and social links.',
+    category: 'other',
+    status: 'active',
+    technologies: ['React', 'Vite', 'TypeScript', 'Tailwind', 'Framer Motion'],
+    links: {
+      github: 'https://github.com/filhashmore/DeejGalaMusic',
+      live: 'https://deej-gala-music.vercel.app',
+    },
+    featured: false,
+    visible: true,
+    order: 9,
+  },
+  {
     id: 'yeehaw',
     title: 'YEEHAW',
     description: 'Promo landing page for FILMORE x Pitbull collab',
@@ -178,7 +194,7 @@ export const projectsConfig: Project[] = [
     },
     featured: false,
     visible: true,
-    order: 9,
+    order: 10,
   },
   {
     id: 'filmore-music',
@@ -193,7 +209,7 @@ export const projectsConfig: Project[] = [
     },
     featured: false,
     visible: false,
-    order: 10,
+    order: 11,
   },
 ]
 
