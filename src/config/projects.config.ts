@@ -181,6 +181,22 @@ export const projectsConfig: Project[] = [
     order: 9,
   },
   {
+    id: 'ddr-healthandfitness',
+    title: 'DDR Health & Fitness',
+    description: 'Personal trainer website for David D. Rogers',
+    longDescription: 'Nashville-based personal trainer site with scroll animations, service packages, and contact integration.',
+    category: 'other',
+    status: 'active',
+    technologies: ['React', 'Vite', 'TypeScript', 'Tailwind', 'Framer Motion'],
+    links: {
+      github: 'https://github.com/filhashmore/ddr-healthandfitness',
+      live: 'https://ddr-healthandfitness.vercel.app',
+    },
+    featured: false,
+    visible: true,
+    order: 10,
+  },
+  {
     id: 'yeehaw',
     title: 'YEEHAW',
     description: 'Promo landing page for FILMORE x Pitbull collab',
@@ -194,7 +210,7 @@ export const projectsConfig: Project[] = [
     },
     featured: false,
     visible: true,
-    order: 10,
+    order: 11,
   },
   {
     id: 'filmore-music',
@@ -209,7 +225,7 @@ export const projectsConfig: Project[] = [
     },
     featured: false,
     visible: false,
-    order: 11,
+    order: 12,
   },
 ]
 
