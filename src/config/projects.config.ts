@@ -12,7 +12,7 @@ export interface Project {
     github?: string
     live?: string
   }
-  accessCode?: string
+  accessCode?: string | string[]
   metrics?: {
     label: string
     value: string
@@ -79,7 +79,7 @@ export const projectsConfig: Project[] = [
       github: 'https://github.com/filhashmore/filmore-advance',
       live: 'https://filmore-advance.vercel.app',
     },
-    accessCode: 'DEMO or FLY1',
+    accessCode: ['DEMO', 'FLY1', 'UNPLUGGED'],
     featured: true,
     visible: true,
     order: 3,

@@ -31,8 +31,18 @@ const cardVariants = {
 export function ProjectCard({ project }: ProjectCardProps) {
   const statusInfo = statusLabels[project.status]
   const [showAllTech, setShowAllTech] = useState(false)
+  const [showAllCodes, setShowAllCodes] = useState(false)
   const visibleTech = showAllTech ? project.technologies : project.technologies.slice(0, 4)
   const hiddenCount = project.technologies.length - 4
+
+  // Normalize accessCode to array
+  const accessCodes = project.accessCode
+    ? Array.isArray(project.accessCode)
+      ? project.accessCode
+      : [project.accessCode]
+    : []
+  const visibleCodes = showAllCodes ? accessCodes : accessCodes.slice(0, 1)
+  const hiddenCodesCount = accessCodes.length - 1
 
   return (
     <motion.article
@@ -121,14 +131,45 @@ export function ProjectCard({ project }: ProjectCardProps) {
           </div>
         )}
 
-        {/* Access Code (if any) */}
-        {project.accessCode && (
-          <div className="flex items-center gap-2 mb-4 px-3 py-2 rounded-md bg-accent-mid/10 border border-accent-mid/20">
+        {/* Access Codes (if any) */}
+        {accessCodes.length > 0 && (
+          <div className="flex items-center gap-2 mb-4 px-3 py-2 rounded-md bg-accent-mid/10 border border-accent-mid/20 flex-wrap">
             <Key className="h-4 w-4 text-accent-mid-bright shrink-0" />
-            <span className="text-xs text-muted-foreground">Access Code:</span>
-            <code className="text-xs font-mono text-accent-mid-bright">
-              {project.accessCode}
-            </code>
+            <span className="text-xs text-muted-foreground">
+              {accessCodes.length > 1 ? 'Show Codes:' : 'Access Code:'}
+            </span>
+            <AnimatePresence mode="popLayout">
+              {visibleCodes.map((code) => (
+                <motion.code
+                  key={code}
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.8 }}
+                  transition={{ duration: 0.15 }}
+                  className="text-xs font-mono text-accent-mid-bright bg-accent-mid/20 px-1.5 py-0.5 rounded"
+                >
+                  {code}
+                </motion.code>
+              ))}
+            </AnimatePresence>
+            {hiddenCodesCount > 0 && !showAllCodes && (
+              <button
+                onClick={() => setShowAllCodes(true)}
+                className="text-xs font-mono text-accent-mid-bright bg-accent-mid/20 px-1.5 py-0.5 rounded cursor-pointer hover:bg-accent-mid/30 transition-colors"
+                aria-label={`Show ${hiddenCodesCount} more access codes`}
+              >
+                +{hiddenCodesCount}
+              </button>
+            )}
+            {showAllCodes && hiddenCodesCount > 0 && (
+              <button
+                onClick={() => setShowAllCodes(false)}
+                className="text-xs font-mono text-accent-mid-bright bg-accent-mid/20 px-1.5 py-0.5 rounded cursor-pointer hover:bg-accent-mid/30 transition-colors"
+                aria-label="Show fewer access codes"
+              >
+                −
+              </button>
+            )}
           </div>
         )}
       </div>
