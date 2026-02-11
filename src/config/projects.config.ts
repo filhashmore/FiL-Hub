@@ -79,7 +79,7 @@ export const projectsConfig: Project[] = [
       github: 'https://github.com/filhashmore/filmore-advance',
       live: 'https://filmore-advance.vercel.app',
     },
-    accessCode: ['DEMO', 'FLY1', 'UNPLUGGED'],
+    accessCode: ['DEMO', 'FLY1', 'TRIO'],
     featured: true,
     visible: true,
     order: 3,
