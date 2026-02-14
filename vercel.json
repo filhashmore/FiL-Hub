@@ -39,7 +39,7 @@
   ],
   "rewrites": [
     {
-      "source": "/((?!api/|llms\\.txt|llms-full\\.txt|index\\.html\\.md|projects\\.md).*)",
+      "source": "/((?!api/|llms\\.txt|llms-full\\.txt|index\\.html\\.md|projects\\.md|sitemap\\.xml).*)",
       "destination": "/index.html"
     }
   ]
