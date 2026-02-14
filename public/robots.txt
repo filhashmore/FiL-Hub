@@ -2,3 +2,8 @@ User-agent: *
 Allow: /
 
 Sitemap: https://fil-hub.vercel.app/sitemap.xml
+
+# AI / LLM Context
+# Structured site context for AI agents and language models
+AI-Context: /llms.txt
+AI-Context-Full: /llms-full.txt
