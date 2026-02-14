@@ -1,0 +1,203 @@
+# FiL Hub — Complete Portfolio Reference
+
+> Developer portfolio for FiL Hash — a touring music production manager turned software developer, building tools that solve real workflow problems for audio professionals, production managers, and touring artists. Based in Nashville, TN.
+
+---
+
+## Site Overview
+
+- **URL:** https://fil-hub.vercel.app
+- **Author:** FiL Hash
+- **Contact:** filhashmore@protonmail.com
+- **GitHub:** https://github.com/filhashmore
+- **X/Twitter:** https://x.com/FiLHashDev
+- **Location:** Nashville, Tennessee
+- **Type:** Developer portfolio and project showcase
+- **Stack:** React 18, Vite 5, TypeScript, Tailwind CSS, Framer Motion
+- **Hosting:** Vercel (with security headers: CSP, HSTS, XSS protection, X-Frame-Options)
+- **PWA:** Yes — installable as a progressive web app
+- **Theme:** Dark theme (#0a0a0a background, neutral grays, gradient accents)
+
+## Navigation
+
+| Page | URL | Description |
+|------|-----|-------------|
+| Home | / | Hero, featured projects, about section, contact |
+| Projects | /projects | Full project grid with category filter (All, Audio Tools, SaaS, Other) |
+| About | /#about | Bio and skills grid (anchor on Home page) |
+| Contact | /#contact | Email and GitHub links (anchor on Home page) |
+
+---
+
+## About FiL Hash
+
+FiL Hash brings 15 years of touring music industry experience to software development — spanning FOH & monitor engineering, production management, stage management, and playback. With a parallel career in photography, visual design, and branding for performing artists, FiL builds web and mobile tools that solve real production workflow problems — from RF coordination to setlist planning to venue advances.
+
+Currently serves as Production Manager for touring country artist FILMORE.
+
+### Core Skills
+
+- Full-stack web & mobile development
+- React, React Native, TypeScript
+- Audio/RF engineering expertise
+- Touring production workflow optimization
+- Visual design & artist branding
+- Supabase & serverless backends
+
+### Domain Expertise
+
+- Production advance workflows (venue tech requirements, hospitality, logistics)
+- Tech riders, input lists, stage plots, hospitality riders
+- RF coordination and frequency management (UHF, IEM, wireless mics)
+- Audio engineering (FOH, monitors, IEM systems, wireless systems)
+- Changeover protocols and load-in logistics
+- Gear inventory and fly pack management
+- Setlist planning, BPM/key analysis, show flow
+
+### Tech Stack Preferences
+
+- **Frontend:** React 18 + Vite 5 + Tailwind CSS + shadcn/ui
+- **Mobile:** React Native + Expo 53 + NativeWind
+- **Backend:** Supabase (auth, DB, row-level security) or localStorage for user-local data
+- **Deployment:** Vercel with security headers
+- **Icons:** Lucide React
+- **Animation:** Framer Motion
+- **Design:** Dark theme, mobile-first, offline-first when possible
+
+---
+
+## Project Catalog
+
+### Audio Tools
+
+#### RF Scout
+- **URL:** https://rf-scout.vercel.app
+- **GitHub:** https://github.com/filhashmore/RF_Scout
+- **Status:** Beta
+- **Stack:** React, Vite, Tailwind, Framer Motion, FCC API
+- **Description:** RF frequency coordination tool for touring audio professionals. Provides real-time spectrum visualization with FCC API integration for location-based TV channel data. Features automatic intermodulation (IM) product avoidance, TV channel exclusion zones, and export compatibility with industry-standard tools.
+- **Key Features:**
+  - Frequency range: 470–608 MHz
+  - 10+ preset venue configurations
+  - Export to Shure Wireless Workbench (WWB) and Sennheiser Wireless Systems Manager (WSM) formats
+  - IM product calculation and avoidance
+  - FCC database integration for real-time TV channel occupancy
+
+#### SetFlow
+- **URL:** https://setflow-beryl.vercel.app
+- **GitHub:** https://github.com/filhashmore/setflow
+- **Status:** Beta
+- **Stack:** React, Vite, TypeScript, Tailwind, shadcn/ui
+- **Description:** Setlist builder with flow analysis tools for musicians, music directors, and production managers. Combines BPM and musical key metadata with visual analysis tools to help build shows that flow well.
+- **Key Features:**
+  - BPM and musical key metadata per song
+  - Circle of Fifths key clash detection between consecutive songs
+  - Energy flow analysis and visualization
+  - Stage-optimized PDF export (designed for low-light environments)
+  - Drag-and-drop setlist ordering
+
+### SaaS / Production Tools
+
+#### Filmore Advance Portal
+- **URL:** https://filmore-advance.vercel.app
+- **GitHub:** https://github.com/filhashmore/filmore-advance
+- **Status:** Beta
+- **Stack:** React, Vite, Tailwind, Supabase
+- **Description:** Self-service venue advance portal for the artist FILMORE. Venues and promoters access the portal with an access code and can view tech riders, stage plots, hospitality requirements, and all production documentation needed to advance a show.
+- **Access Codes:**
+  - `DEMO` — Demo access to explore the portal
+  - `FLY1` — Fly date profile (reduced production)
+  - `TRIO` — Trio show profile
+- **Key Features:**
+  - Profile-based content filtering (full band, fly dates, trio shows)
+  - Tech riders, input lists, stage plots, hospitality riders
+  - Document downloads
+  - Mobile-responsive for on-site venue use
+
+#### Tour Advance Portal
+- **URL:** https://tour-advance-portal.vercel.app
+- **GitHub:** https://github.com/filhashmore/tour-advance-portal
+- **Status:** In Development
+- **Stack:** React, Vite, TypeScript, Supabase
+- **Description:** A config-driven, reusable template version of the Filmore Advance Portal. Designed so any production manager can deploy their own branded venue advance portal by modifying a single configuration file. Multi-tenant architecture with Supabase row-level security.
+
+#### Filmore Gear Inventory
+- **URL:** https://filmore-gear.vercel.app
+- **GitHub:** https://github.com/filhashmore/filmore-gear
+- **Status:** Beta
+- **Stack:** React, HTML/CSS, localStorage, Tailwind
+- **Description:** Comprehensive touring gear tracking system for FILMORE's production team. Tracks all gear across categories, manages consumables with quantity tracking, handles fly pack assignments for reduced-production travel dates, and includes role-based approval workflows for new gear acquisition requests.
+- **Access Code:** `DEMO4`
+- **Key Features:**
+  - Complete gear inventory with categories
+  - Consumables tracking with quantity and restock alerts
+  - Fly pack assignment and management
+  - Role-based acquisition approval workflow
+  - localStorage-based (works offline)
+
+#### Tour Flow App
+- **GitHub:** https://github.com/filhashmore/tour-flow-app
+- **Status:** Paused (no live URL)
+- **Stack:** React Native, Expo 53, TypeScript, Supabase, Zustand
+- **Description:** Mobile tour management application for audio engineers and crew. Features multi-crew collaboration, tour scheduling, gear inventory, input list management, and AI assistant integration. Currently paused development.
+
+### Artist & Promo Sites
+
+#### Filmore Bio (EPK)
+- **URL:** https://filmore-bio.vercel.app
+- **GitHub:** https://github.com/filhashmore/filmore-bio
+- **Status:** Active
+- **Stack:** Next.js 14, TypeScript, Framer Motion, Tailwind
+- **Description:** Artist biography and electronic press kit (EPK) website for country music artist FILMORE. Features bio, tour dates, video gallery, press photos, and social media integration.
+
+#### Filmore 1-Sheet
+- **URL:** https://filmore-1sheet.vercel.app
+- **GitHub:** https://github.com/filhashmore/filmore-1sheet
+- **Status:** Active
+- **Stack:** HTML, CSS, Supabase Analytics
+- **Description:** Digital press 1-sheet for FILMORE featuring streaming statistics (481M+ total streams), Spotify listener demographics visualization, and key artist metrics. Designed as a concise digital counterpart to traditional press kits.
+
+#### Deej Gala Music
+- **URL:** https://deej-gala-music.vercel.app
+- **GitHub:** https://github.com/filhashmore/DeejGalaMusic
+- **Status:** Active
+- **Stack:** React, Vite, TypeScript, Tailwind, Framer Motion
+- **Description:** Cyberpunk-styled artist showcase website for DEEJ GALA featuring parallax hero section, discography, photo gallery, and social links.
+
+#### DDR Health & Fitness
+- **URL:** https://ddr-healthandfitness.vercel.app
+- **GitHub:** https://github.com/filhashmore/ddr-healthandfitness
+- **Status:** Active
+- **Stack:** React, Vite, TypeScript, Tailwind, Framer Motion
+- **Description:** Professional website for Nashville-based personal trainer David D. Rogers. Features scroll-triggered animations, service package breakdowns, and contact integration.
+
+#### YEEHAW
+- **URL:** https://yeehaw-beta.vercel.app
+- **GitHub:** https://github.com/filhashmore/yeehaw
+- **Status:** Active
+- **Stack:** Pure HTML, CSS
+- **Description:** Minimal promotional landing page for the FILMORE x Pitbull collaboration single. Features YouTube embed and streaming platform CTAs.
+
+---
+
+## Architecture Patterns
+
+All projects in this portfolio follow consistent design patterns:
+
+- **Config-driven architecture:** Centralized configuration files for easy customization
+- **Dark theme:** #0a0a0a backgrounds with neutral grays across all projects
+- **Mobile-first:** Responsive design prioritizing mobile viewport
+- **Offline-first where possible:** localStorage over backend for user-local data (touring means unreliable internet)
+- **Security headers:** All Vercel deployments include CSP, HSTS, XSS protection, X-Frame-Options, Referrer-Policy, and Permissions-Policy
+- **PWA support:** Progressive Web App capabilities for on-site touring tools
+
+---
+
+## Contact
+
+FiL Hash is available for freelance work and collaboration on audio tools, creative tech, and touring production solutions.
+
+- **Email:** filhashmore@protonmail.com
+- **GitHub:** https://github.com/filhashmore
+- **X/Twitter:** https://x.com/FiLHashDev
+- **Location:** Nashville, TN

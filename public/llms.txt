@@ -1,0 +1,45 @@
+# FiL Hub
+
+> Developer portfolio for FiL Hash — a production manager and software developer building audio tools, creative tech, and web applications for the touring music industry. Based in Nashville, TN.
+
+## Site Info
+
+- URL: https://fil-hub.vercel.app
+- Author: FiL Hash
+- Contact: filhashmore@protonmail.com
+- GitHub: https://github.com/filhashmore
+- X/Twitter: https://x.com/FiLHashDev
+- Stack: React, Vite, TypeScript, Tailwind CSS, Framer Motion
+- Type: Single-page portfolio with project showcase
+
+## Pages
+
+- [Home](https://fil-hub.vercel.app/): Hero section, featured projects, about bio, and contact information
+- [Projects](https://fil-hub.vercel.app/projects): Full project grid with category filtering (Audio Tools, SaaS, Other)
+
+## About the Developer
+
+FiL Hash brings 15 years of touring music industry experience to software development — spanning FOH & monitor engineering, production management, stage management, and playback. With a parallel career in photography, visual design, and branding for performing artists, FiL builds web and mobile tools that solve real production workflow problems — from RF coordination to setlist planning to venue advances.
+
+Skills: Full-stack web & mobile development, React/React Native/TypeScript, Audio/RF engineering, Touring production workflow optimization, Visual design & artist branding, Supabase & serverless backends.
+
+## Featured Projects
+
+- [RF Scout](https://rf-scout.vercel.app): RF frequency coordination tool for touring audio professionals. Real-time spectrum visualization, FCC API integration, IM product avoidance, TV channel exclusion. Export to Shure WWB & Sennheiser WSM. (Beta)
+- [SetFlow](https://setflow-beryl.vercel.app): Setlist builder with BPM/key metadata, Circle of Fifths key clash detection, energy flow analysis, and stage-optimized PDF export. (Beta)
+- [Filmore Advance Portal](https://filmore-advance.vercel.app): Self-service venue advance portal. Venues access tech riders, stage plots, hospitality riders, and production docs with profile-based content filtering. Access codes: DEMO, FLY1, TRIO. (Beta)
+- [Tour Advance Portal](https://tour-advance-portal.vercel.app): Config-driven, multi-tenant advance portal template for any production manager. (In Development)
+- [Filmore Gear Inventory](https://filmore-gear.vercel.app): Touring gear tracking with consumables management, fly pack assignments, and role-based acquisition approvals. Access code: DEMO4. (Beta)
+- [Filmore 1-Sheet](https://filmore-1sheet.vercel.app): Digital press kit for artist FILMORE featuring 481M+ streams and Spotify demographics. (Active)
+
+## All Projects
+
+- [Filmore Bio](https://filmore-bio.vercel.app): Next.js artist biography site for FILMORE with tour dates, video gallery, and social links. (Active)
+- [Deej Gala Music](https://deej-gala-music.vercel.app): Cyberpunk-styled artist website for DEEJ GALA with parallax hero and discography. (Active)
+- [DDR Health & Fitness](https://ddr-healthandfitness.vercel.app): Nashville personal trainer website with scroll animations and service packages. (Active)
+- [YEEHAW](https://yeehaw-beta.vercel.app): Promo landing page for FILMORE x Pitbull collaboration. (Active)
+- Tour Flow App: React Native mobile tour management app (Paused, no live URL)
+
+## Contact
+
+Available for freelance and collaboration. Email filhashmore@protonmail.com, follow on X at https://x.com/FiLHashDev, or visit GitHub at https://github.com/filhashmore.
